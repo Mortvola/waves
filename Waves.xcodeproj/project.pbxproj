@@ -14,6 +14,13 @@
 		79372A3029FC1133004FE219 /* WavesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A2F29FC1133004FE219 /* WavesTests.swift */; };
 		79372A3A29FC1133004FE219 /* WavesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A3929FC1133004FE219 /* WavesUITests.swift */; };
 		79372A3C29FC1133004FE219 /* WavesUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A3B29FC1133004FE219 /* WavesUITestsLaunchTests.swift */; };
+		79372A4A29FC11BB004FE219 /* RenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A4929FC11BB004FE219 /* RenderView.swift */; };
+		79372A4C29FC1200004FE219 /* RenderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A4B29FC1200004FE219 /* RenderViewController.swift */; };
+		79372A4E29FC1263004FE219 /* RenderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A4D29FC1263004FE219 /* RenderDelegate.swift */; };
+		79372A5029FC1279004FE219 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A4F29FC1279004FE219 /* Renderer.swift */; };
+		79372A5229FC13FD004FE219 /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5129FC13FD004FE219 /* MetalView.swift */; };
+		79372A5429FC20A3004FE219 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5329FC20A3004FE219 /* Errors.swift */; };
+		79372A5629FC2472004FE219 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5529FC2472004FE219 /* Shaders.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +51,14 @@
 		79372A3529FC1133004FE219 /* WavesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WavesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		79372A3929FC1133004FE219 /* WavesUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WavesUITests.swift; sourceTree = "<group>"; };
 		79372A3B29FC1133004FE219 /* WavesUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WavesUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		79372A4829FC115F004FE219 /* Waves.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Waves.entitlements; sourceTree = "<group>"; };
+		79372A4929FC11BB004FE219 /* RenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderView.swift; sourceTree = "<group>"; };
+		79372A4B29FC1200004FE219 /* RenderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderViewController.swift; sourceTree = "<group>"; };
+		79372A4D29FC1263004FE219 /* RenderDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderDelegate.swift; sourceTree = "<group>"; };
+		79372A4F29FC1279004FE219 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		79372A5129FC13FD004FE219 /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
+		79372A5329FC20A3004FE219 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
+		79372A5529FC2472004FE219 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,8 +109,16 @@
 		79372A1D29FC1130004FE219 /* Waves */ = {
 			isa = PBXGroup;
 			children = (
+				79372A4829FC115F004FE219 /* Waves.entitlements */,
 				79372A1E29FC1130004FE219 /* WavesApp.swift */,
 				79372A2029FC1130004FE219 /* ContentView.swift */,
+				79372A4929FC11BB004FE219 /* RenderView.swift */,
+				79372A4B29FC1200004FE219 /* RenderViewController.swift */,
+				79372A5129FC13FD004FE219 /* MetalView.swift */,
+				79372A4D29FC1263004FE219 /* RenderDelegate.swift */,
+				79372A4F29FC1279004FE219 /* Renderer.swift */,
+				79372A5329FC20A3004FE219 /* Errors.swift */,
+				79372A5529FC2472004FE219 /* Shaders.metal */,
 				79372A2229FC1132004FE219 /* Assets.xcassets */,
 				79372A2429FC1132004FE219 /* Preview Content */,
 			);
@@ -257,8 +280,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79372A4C29FC1200004FE219 /* RenderViewController.swift in Sources */,
+				79372A5229FC13FD004FE219 /* MetalView.swift in Sources */,
 				79372A2129FC1130004FE219 /* ContentView.swift in Sources */,
 				79372A1F29FC1130004FE219 /* WavesApp.swift in Sources */,
+				79372A5429FC20A3004FE219 /* Errors.swift in Sources */,
+				79372A4A29FC11BB004FE219 /* RenderView.swift in Sources */,
+				79372A5629FC2472004FE219 /* Shaders.metal in Sources */,
+				79372A5029FC1279004FE219 /* Renderer.swift in Sources */,
+				79372A4E29FC1263004FE219 /* RenderDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -414,6 +444,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Waves/Waves.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Waves/Preview Content\"";
@@ -432,6 +463,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.richardshields.Waves;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -443,6 +477,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Waves/Waves.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Waves/Preview Content\"";
@@ -461,6 +496,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.richardshields.Waves;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
