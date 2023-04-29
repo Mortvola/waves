@@ -7,63 +7,63 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D6D4B007-BDC2-4B46-85AB-E4003980FCEE"
+            uuid = "C595123F-5146-40CA-8DAE-746628E218E4"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "123"
-            endingLineNumber = "123"
-            landmarkName = "Renderer"
-            landmarkType = "3">
+            startingLineNumber = "208"
+            endingLineNumber = "208"
+            landmarkName = "updateTexture(commandQueue:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "949D9ED6-C38A-4798-A75F-7374496CE4FD"
-            shouldBeEnabled = "Yes"
+            uuid = "8575AD37-2B4A-4993-9724-C53F4DB355CB"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "131"
-            endingLineNumber = "131"
-            landmarkName = "Renderer"
-            landmarkType = "3">
+            startingLineNumber = "205"
+            endingLineNumber = "205"
+            landmarkName = "updateTexture(commandQueue:)"
+            landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "949D9ED6-C38A-4798-A75F-7374496CE4FD - 5f24954f7e3614e5"
+                  uuid = "8575AD37-2B4A-4993-9724-C53F4DB355CB - d25a7a45f63bff99"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "Waves.Renderer.phillipsSpectrum() -&gt; ()"
+                  symbolName = "Waves.Renderer.updateTexture(commandQueue: __C.MTLCommandQueue) -&gt; ()"
                   moduleName = "Waves"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "98"
-                  endingLineNumber = "98"
-                  offsetFromSymbolStart = "968">
+                  startingLineNumber = "198"
+                  endingLineNumber = "198"
+                  offsetFromSymbolStart = "296">
                </Location>
                <Location
-                  uuid = "949D9ED6-C38A-4798-A75F-7374496CE4FD - 5f24954f7e3614e5"
+                  uuid = "8575AD37-2B4A-4993-9724-C53F4DB355CB - d25a7a45f63bff99"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "Waves.Renderer.phillipsSpectrum() -&gt; ()"
+                  symbolName = "Waves.Renderer.updateTexture(commandQueue: __C.MTLCommandQueue) -&gt; ()"
                   moduleName = "Waves"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "98"
-                  endingLineNumber = "98"
-                  offsetFromSymbolStart = "5144">
+                  startingLineNumber = "198"
+                  endingLineNumber = "198"
+                  offsetFromSymbolStart = "356">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -71,16 +71,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4EE110DB-3B04-4B92-93C3-2C2D7D2B558D"
+            uuid = "FAF01035-887A-4B4B-AD49-CFF67E2C6B9F"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "65"
-            endingLineNumber = "65"
-            landmarkName = "makeNoiseTexture()"
+            startingLineNumber = "211"
+            endingLineNumber = "211"
+            landmarkName = "updateTexture(commandQueue:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

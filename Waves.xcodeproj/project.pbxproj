@@ -21,6 +21,8 @@
 		79372A5229FC13FD004FE219 /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5129FC13FD004FE219 /* MetalView.swift */; };
 		79372A5429FC20A3004FE219 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5329FC20A3004FE219 /* Errors.swift */; };
 		79372A5629FC2472004FE219 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5529FC2472004FE219 /* Shaders.metal */; };
+		79372A5829FD6DC4004FE219 /* InputTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5729FD6DC4004FE219 /* InputTexture.swift */; };
+		79372A5A29FD716E004FE219 /* Rectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5929FD716E004FE219 /* Rectangle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +61,8 @@
 		79372A5129FC13FD004FE219 /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
 		79372A5329FC20A3004FE219 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		79372A5529FC2472004FE219 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		79372A5729FD6DC4004FE219 /* InputTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTexture.swift; sourceTree = "<group>"; };
+		79372A5929FD716E004FE219 /* Rectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rectangle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +121,8 @@
 				79372A5129FC13FD004FE219 /* MetalView.swift */,
 				79372A4D29FC1263004FE219 /* RenderDelegate.swift */,
 				79372A4F29FC1279004FE219 /* Renderer.swift */,
+				79372A5929FD716E004FE219 /* Rectangle.swift */,
+				79372A5729FD6DC4004FE219 /* InputTexture.swift */,
 				79372A5329FC20A3004FE219 /* Errors.swift */,
 				79372A5529FC2472004FE219 /* Shaders.metal */,
 				79372A2229FC1132004FE219 /* Assets.xcassets */,
@@ -282,6 +288,8 @@
 			files = (
 				79372A4C29FC1200004FE219 /* RenderViewController.swift in Sources */,
 				79372A5229FC13FD004FE219 /* MetalView.swift in Sources */,
+				79372A5829FD6DC4004FE219 /* InputTexture.swift in Sources */,
+				79372A5A29FD716E004FE219 /* Rectangle.swift in Sources */,
 				79372A2129FC1130004FE219 /* ContentView.swift in Sources */,
 				79372A1F29FC1130004FE219 /* WavesApp.swift in Sources */,
 				79372A5429FC20A3004FE219 /* Errors.swift in Sources */,

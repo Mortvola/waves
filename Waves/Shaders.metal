@@ -39,7 +39,12 @@ fragment float4 fragmentShader(
     return out;
 }
 
-kernel void test(
+struct Params {
+    float2 windDirection;
+};
+
+kernel void makeInputTexture(
+                 const device Params &params [[buffer(0)]],
                  texture2d<float, access::read> noise1 [[texture(0)]],
                  texture2d<float, access::read> noise2 [[texture(1)]],
                  texture2d<float, access::write> output [[texture(2)]],
@@ -48,11 +53,10 @@ kernel void test(
 {
     float A = 20;
     float L = 1000;
-    float N = output.get_height();
+    float N = output.get_width();
     
     // Wind speed
     float V = 5; // meters per second
-    float2 w = normalize(float2(1, 1));
 
     float g = 9.8; // meters per second^2
     float L2 = (V * V) / g; // (m^2 / s) * (s^2 / m) --> meter seconds
@@ -65,8 +69,8 @@ kernel void test(
     float2 k = float2((2.0 * M_PI_F * n) / L, (2.0 * M_PI_F * m) / L);
     
     float kLength = length(k);
-    float kdotw = dot(normalize(k), w);
-    float negKdotw = dot(normalize(-k), w);
+    float kdotw = dot(normalize(k), params.windDirection);
+    float negKdotw = dot(normalize(-k), params.windDirection);
     
     if (kLength == 0) {
         kLength = 0.00001;
@@ -85,4 +89,39 @@ kernel void test(
     float n2 = noise1.read(ushort2(tpig.x, tpig.y)).r;
 
     output.write(float4(h0k * n1, h0k * n2, 0, 1), ushort2(tpig.x, tpig.y));
+}
+
+float2 ComplexMultiply(float2 a, float2 b)
+{
+    return float2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+}
+
+kernel void makeTimeTexture(
+                            const device float &t [[buffer(0)]],
+                            texture2d<float, access::read> input1 [[texture(0)]],
+                            texture2d<float, access::read> input2 [[texture(1)]],
+                            texture2d<float, access::write> output [[texture(2)]],
+                            uint2 tpig [[thread_position_in_grid]]
+                           )
+{
+    float2 h0k = input1.read(ushort2(tpig.x, tpig.y)).rg;
+    float2 negh0k = input2.read(ushort2(tpig.x, tpig.y)).rg;
+    
+    float L = 1000;
+    float N = input1.get_width();
+
+    float n = tpig.x - N / 2;
+    float m = tpig.y - N / 2;
+
+    float g = 9.8; // meters per second^2
+    float2 k = float2((2.0 * M_PI_F * n) / L, (2.0 * M_PI_F * m) / L);
+
+    float w = sqrt(g * length(k));
+    
+    // Usnig euler's formula, e^ix == cos(x) + i * sin(x)...
+    float2 exponent = float2(cos(w * t), sin(w * t));
+    
+    float2 v = ComplexMultiply(h0k, exponent) + ComplexMultiply(negh0k, float2(exponent.x, -exponent.y));
+    
+    output.write(float4(v.x, v.y, 0, 1), ushort2(tpig.x, tpig.y));
 }
