@@ -29,8 +29,9 @@ vertex VertexOut vertexShader(VertexIn in [[stage_in]]) {
 
 fragment float4 fragmentShader(
                                VertexOut in [[ stage_in ]],
-                               texture2d<float> tex [[texture(0)]],
-                               sampler sampler [[sampler(0)]])
+                               texture2d<float> tex [[ texture(0) ]],
+                               sampler sampler [[ sampler(0) ]]
+                               )
 {
     float4 out;
     
@@ -39,9 +40,14 @@ fragment float4 fragmentShader(
     return out;
 }
 
+float2 ComplexMultiply(float2 a, float2 b)
+{
+    return float2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+}
+
 kernel void makeButterflyTexture(
-                                 texture2d<float, access::write> output [[texture(0)]],
-                                 uint2 tpig [[thread_position_in_grid]]
+                                 texture2d<float, access::write> output [[ texture(0) ]],
+                                 uint2 tpig [[ thread_position_in_grid ]]
                                  )
 {
     int stage = tpig.y + 1;
@@ -52,7 +58,6 @@ kernel void makeButterflyTexture(
     int groupButterflyIndex = tpig.x % (lanesPerGroup / 2);
     
     float theta = -2 * M_PI_F / lanesPerGroup;
-//    float theta = -2 * M_PI_F / output.get_width();
     
     // de Moivre's formula: (cos(theta) + i sin(theta))^n = cos(n * theta) + i sin(n * theta)
     float2 w = float2(cos(theta * groupButterflyIndex), sin(theta * groupButterflyIndex));
@@ -65,13 +70,49 @@ struct Params {
     float2 windDirection;
 };
 
+kernel void inverseHorzFFTStage(
+                            const device int &stage [[ buffer(0) ]],
+                            texture2d<float, access::read> input [[ texture(0) ]],
+                            texture2d<float, access::write> output [[ texture(1) ]],
+                            texture2d<float, access::read> butterfly [[ texture(2) ]],
+                            uint2 tpig [[ thread_position_in_grid ]]
+                            )
+{
+    float4 lookup = butterfly.read(uint2(tpig.x, stage));
+    
+    float4 v1 = input.read(uint2(lookup.b, tpig.y));
+    float4 v2 = input.read(uint2(lookup.a, tpig.y));
+    
+    float2 c1 = v1.rg + ComplexMultiply(lookup.rg, float2(v2.r, -v2.g));
+    
+    output.write(float4(c1.r, c1.g, 0, 1), tpig);
+}
+
+kernel void inverseVertFFTStage(
+                            const device int &stage [[ buffer(0) ]],
+                            texture2d<float, access::read> input [[ texture(0) ]],
+                            texture2d<float, access::write> output [[ texture(1) ]],
+                            texture2d<float, access::read> butterfly [[ texture(2) ]],
+                            uint2 tpig [[ thread_position_in_grid ]]
+                            )
+{
+    float4 lookup = butterfly.read(uint2(tpig.y, stage));
+    
+    float4 v1 = input.read(uint2(tpig.x, lookup.b));
+    float4 v2 = input.read(uint2(tpig.x, lookup.a));
+
+    float2 c1 = v1.rg + ComplexMultiply(lookup.rg, float2(v2.r, -v2.g));
+    
+    output.write(float4(c1.x, c1.y, 0, 1), tpig);
+}
+
 kernel void makeInputTexture(
-                 const device Params &params [[buffer(0)]],
-                 texture2d<float, access::read> noise1 [[texture(0)]],
-                 texture2d<float, access::read> noise2 [[texture(1)]],
-                 texture2d<float, access::write> output [[texture(2)]],
-                 uint2 tpig [[thread_position_in_grid]]
-                 )
+                             const device Params &params [[ buffer(0) ]],
+                             texture2d<float, access::read> noise1 [[ texture(0) ]],
+                             texture2d<float, access::read> noise2 [[ texture(1) ]],
+                             texture2d<float, access::write> output [[ texture(2) ]],
+                             uint2 tpig [[ thread_position_in_grid ]]
+                             )
 {
     float A = 20;
     float L = 1000;
@@ -113,18 +154,13 @@ kernel void makeInputTexture(
     output.write(float4(h0k * n1, h0k * n2, 0, 1), ushort2(tpig.x, tpig.y));
 }
 
-float2 ComplexMultiply(float2 a, float2 b)
-{
-    return float2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
-}
-
 kernel void makeTimeTexture(
-                            const device float &t [[buffer(0)]],
-                            texture2d<float, access::read> input1 [[texture(0)]],
-                            texture2d<float, access::read> input2 [[texture(1)]],
-                            texture2d<float, access::read> butterfly [[texture(2)]],
-                            texture2d<float, access::write> output [[texture(3)]],
-                            uint2 tpig [[thread_position_in_grid]]
+                            const device float &t [[ buffer(0) ]],
+                            texture2d<float, access::read> input1 [[ texture(0) ]],
+                            texture2d<float, access::read> input2 [[ texture(1) ]],
+                            texture2d<float, access::read> butterfly [[ texture(2) ]],
+                            texture2d<float, access::write> output [[ texture(3) ]],
+                            uint2 tpig [[ thread_position_in_grid ]]
                            )
 {
     float2 h0k = input1.read(ushort2(tpig.x, tpig.y)).rg;

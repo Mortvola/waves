@@ -31,8 +31,8 @@ class Renderer {
 
     private var previousFrameTime: Double?
     
-    private var h0ktTexture: MTLTexture? = nil
-    
+    private var h0ktTexture: [MTLTexture] = []
+
     private var updatePipeline: MTLComputePipelineState? = nil
 
     private var params: MTLBuffer? = nil
@@ -41,6 +41,8 @@ class Renderer {
     private var inputTexture2: InputTexture? = nil
     
     private var butterflyTexture: MTLTexture? = nil
+    private var inverseHorzFFTPipeline: MTLComputePipelineState? = nil
+    private var inverseVertFFTPipeline: MTLComputePipelineState? = nil
 
     func initialize() throws {
         guard let queue = MetalView.shared.device.makeCommandQueue() else {
@@ -64,8 +66,9 @@ class Renderer {
         let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rg32Float, width: N, height: N, mipmapped: false);
         textureDescr.usage = [.shaderWrite, .shaderRead]
         
-        h0ktTexture = MetalView.shared.device.makeTexture(descriptor: textureDescr)
-        
+        h0ktTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
+        h0ktTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
+
         let library = MetalView.shared.device.makeDefaultLibrary()
 
         guard let function = library?.makeFunction(name: "makeTimeTexture") else {
@@ -76,15 +79,33 @@ class Renderer {
         
         params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Float>.size)!
         
-        self.rectangle3 = Rectangle(texture: h0ktTexture!, size: Float(N), offset: simd_float2(-Float(N), -Float(N)));
+        self.rectangle3 = Rectangle(texture: h0ktTexture[0], size: Float(N), offset: simd_float2(-Float(N), -Float(N)));
         
         makeButterflyTexture()
+        
+        makeInverseFFTPipelines()
     }
-          
+
+    func makeInverseFFTPipelines() {
+        let library = MetalView.shared.device.makeDefaultLibrary()
+
+        guard let horzFunction = library?.makeFunction(name: "inverseHorzFFTStage") else {
+            return
+        }
+        
+        guard let vertFunction = library?.makeFunction(name: "inverseVertFFTStage") else {
+            return
+        }
+
+        inverseHorzFFTPipeline = try? MetalView.shared.device.makeComputePipelineState(function: horzFunction)
+        
+        inverseVertFFTPipeline = try? MetalView.shared.device.makeComputePipelineState(function: vertFunction)
+    }
+    
     func makeButterflyTexture() {
         let height = Int(log2(Float(N)))
         
-        let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: N / 2, height: height, mipmapped: false);
+        let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: N, height: height, mipmapped: false);
         textureDescr.usage = [.shaderWrite, .shaderRead]
         
         butterflyTexture = MetalView.shared.device.makeTexture(descriptor: textureDescr)
@@ -95,35 +116,6 @@ class Renderer {
             return
         }
         
-//        let n = 512
-//        var y = 0
-//        for s in 1...height {
-//            let m = Int(powf(2, Float(s)))
-//
-//            var x = 0
-//            for k in stride(from: 0, to: n - 1, by: m) {
-//                for j in 0..<m / 2 {
-//                    let stage = y + 1;
-//
-//                    let m2 = Int(powf(2.0, Float(y + 1)));
-//                    let j2 = x % (m / 2);
-//                    let k2 = Int(powf(Float(x), Float(m)));
-//
-//                    print("\(x) \(k)")
-//                    if m != m2 || k != k2 || j != j2 {
-//                        print("different")
-//                    }
-////                    float2 w = pow(float2(cos(2 * M_PI_F / m), sin(2 * M_PI_F / m)), j);
-////
-////                    output.write(float4(w.x, w.y, k + j, k + j + m/2), tpig);
-//
-//                    x += 1
-//                }
-//            }
-//
-//            y += 1
-//        }
-        
         if let pipeline = try? MetalView.shared.device.makeComputePipelineState(function: function) {
             
             if let commandBuffer = commandQueue!.makeCommandBuffer() {
@@ -131,13 +123,7 @@ class Renderer {
                     
                     computeEncoder.setComputePipelineState(pipeline)
                     
-//                    let p = params.contents().bindMemory(to: simd_float2.self, capacity: MemoryLayout<simd_float2>.size)
-//                    p[0] = windDirection
-//
-//                    computeEncoder.setBuffer(params, offset: 0, index: 0)
                     computeEncoder.setTexture(butterflyTexture, index: 0)
-//                    computeEncoder.setTexture(noiseTexture2, index: 1)
-//                    computeEncoder.setTexture(h0ktexture, index: 2)
                     
                     let threadsPerGrid = MTLSizeMake(N, height, 1)
                     
@@ -281,6 +267,14 @@ class Renderer {
     }
     
     func updateTexture(commandQueue: MTLCommandQueue) {
+        guard let inverseHorzFFTPipeline = inverseHorzFFTPipeline else {
+            return
+        }
+
+        guard let inverseVertFFTPipeline = inverseVertFFTPipeline else {
+            return
+        }
+
         if let commandBuffer = commandQueue.makeCommandBuffer() {
             if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
                 computeEncoder.setComputePipelineState(updatePipeline!)
@@ -291,8 +285,7 @@ class Renderer {
                 computeEncoder.setBuffer(params, offset: 0, index: 0)
                 computeEncoder.setTexture(inputTexture1?.h0ktexture, index: 0)
                 computeEncoder.setTexture(inputTexture2?.h0ktexture, index: 1)
-                computeEncoder.setTexture(butterflyTexture, index: 2)
-                computeEncoder.setTexture(h0ktTexture, index: 3)
+                computeEncoder.setTexture(h0ktTexture[0], index: 3)
                 
                 let threadsPerGrid = MTLSizeMake(N, N, 1)
                 
@@ -303,6 +296,42 @@ class Renderer {
                 
                 computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
                 
+                // Perform horizontal inverse FFT
+                computeEncoder.setComputePipelineState(inverseHorzFFTPipeline)
+
+                computeEncoder.setTexture(butterflyTexture, index: 2)
+
+                let stages = Int(log2(Float(N)))
+                
+                var pingpong = 0
+                
+                for stage in 0..<stages {
+                    computeEncoder.setTexture(h0ktTexture[pingpong], index: 0)
+                    computeEncoder.setTexture(h0ktTexture[pingpong ^ 1], index: 1)
+
+                    var s: Int = stage
+                    computeEncoder.setBytes(&s, length: MemoryLayout<Int>.size, index: 0)
+                    computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
+                    
+                    pingpong ^= 1
+                }
+
+                // Perform horizontal inverse FFT
+                computeEncoder.setComputePipelineState(inverseVertFFTPipeline)
+
+                computeEncoder.setTexture(butterflyTexture, index: 2)
+
+                for stage in 0..<stages {
+                    computeEncoder.setTexture(h0ktTexture[pingpong], index: 0)
+                    computeEncoder.setTexture(h0ktTexture[pingpong ^ 1], index: 1)
+
+                    var s: Int = stage
+                    computeEncoder.setBytes(&s, length: MemoryLayout<Int>.size, index: 0)
+                    computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
+                    
+                    pingpong ^= 1
+                }
+
                 computeEncoder.endEncoding()
                 
                 commandBuffer.commit()
