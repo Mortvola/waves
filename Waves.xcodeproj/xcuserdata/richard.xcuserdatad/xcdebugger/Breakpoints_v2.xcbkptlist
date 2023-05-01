@@ -7,63 +7,124 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "C595123F-5146-40CA-8DAE-746628E218E4"
+            uuid = "FDA7CCBD-0E99-4F0D-B736-9F3C31B25062"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "208"
-            endingLineNumber = "208"
-            landmarkName = "updateTexture(commandQueue:)"
+            startingLineNumber = "151"
+            endingLineNumber = "151"
+            landmarkName = "makeButterflyTexture()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8575AD37-2B4A-4993-9724-C53F4DB355CB"
+            uuid = "C296A955-3056-4626-AF80-546B3CD3756B"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "205"
-            endingLineNumber = "205"
-            landmarkName = "updateTexture(commandQueue:)"
+            startingLineNumber = "120"
+            endingLineNumber = "120"
+            landmarkName = "makeButterflyTexture()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4C4AFE3A-09F2-4F09-8E38-2CCC86691DB9"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Renderer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "114"
+            endingLineNumber = "114"
+            landmarkName = "makeButterflyTexture()"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "8575AD37-2B4A-4993-9724-C53F4DB355CB - d25a7a45f63bff99"
+                  uuid = "4C4AFE3A-09F2-4F09-8E38-2CCC86691DB9 - 7afcf263657d60d1"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "Waves.Renderer.updateTexture(commandQueue: __C.MTLCommandQueue) -&gt; ()"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
                   moduleName = "Waves"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "198"
-                  endingLineNumber = "198"
-                  offsetFromSymbolStart = "296">
+                  startingLineNumber = "114"
+                  endingLineNumber = "114"
+                  offsetFromSymbolStart = "4288">
                </Location>
                <Location
-                  uuid = "8575AD37-2B4A-4993-9724-C53F4DB355CB - d25a7a45f63bff99"
+                  uuid = "4C4AFE3A-09F2-4F09-8E38-2CCC86691DB9 - 7afcf263657d60d1"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "Waves.Renderer.updateTexture(commandQueue: __C.MTLCommandQueue) -&gt; ()"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
                   moduleName = "Waves"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "198"
-                  endingLineNumber = "198"
-                  offsetFromSymbolStart = "356">
+                  startingLineNumber = "114"
+                  endingLineNumber = "114"
+                  offsetFromSymbolStart = "4580">
+               </Location>
+               <Location
+                  uuid = "4C4AFE3A-09F2-4F09-8E38-2CCC86691DB9 - 7afcf263657d60d1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "114"
+                  endingLineNumber = "114"
+                  offsetFromSymbolStart = "4756">
+               </Location>
+               <Location
+                  uuid = "4C4AFE3A-09F2-4F09-8E38-2CCC86691DB9 - 7afcf263657d6282"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "127"
+                  endingLineNumber = "127"
+                  offsetFromSymbolStart = "1496">
+               </Location>
+               <Location
+                  uuid = "4C4AFE3A-09F2-4F09-8E38-2CCC86691DB9 - 7afcf263657d6282"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "127"
+                  endingLineNumber = "127"
+                  offsetFromSymbolStart = "1708">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -71,17 +132,142 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "FAF01035-887A-4B4B-AD49-CFF67E2C6B9F"
+            uuid = "19F28D12-0143-4A04-AB76-65EFEDCE47F2"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "211"
-            endingLineNumber = "211"
-            landmarkName = "updateTexture(commandQueue:)"
+            startingLineNumber = "103"
+            endingLineNumber = "103"
+            landmarkName = "makeButterflyTexture()"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "19F28D12-0143-4A04-AB76-65EFEDCE47F2 - 7afcf263657d677a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "103"
+                  endingLineNumber = "103"
+                  offsetFromSymbolStart = "1948">
+               </Location>
+               <Location
+                  uuid = "19F28D12-0143-4A04-AB76-65EFEDCE47F2 - 7afcf263657d677a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "103"
+                  endingLineNumber = "103"
+                  offsetFromSymbolStart = "1956">
+               </Location>
+               <Location
+                  uuid = "19F28D12-0143-4A04-AB76-65EFEDCE47F2 - 7afcf263657d677a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "103"
+                  endingLineNumber = "103"
+                  offsetFromSymbolStart = "1964">
+               </Location>
+               <Location
+                  uuid = "19F28D12-0143-4A04-AB76-65EFEDCE47F2 - 7afcf263657d6282"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "127"
+                  endingLineNumber = "127"
+                  offsetFromSymbolStart = "1496">
+               </Location>
+               <Location
+                  uuid = "19F28D12-0143-4A04-AB76-65EFEDCE47F2 - 7afcf263657d6282"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "127"
+                  endingLineNumber = "127"
+                  offsetFromSymbolStart = "1708">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C034272D-492C-402B-8E25-D695269D5961"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Renderer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "127"
+            endingLineNumber = "127"
+            landmarkName = "makeButterflyTexture()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "C034272D-492C-402B-8E25-D695269D5961 - 7afcf263657d62a3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "128"
+                  endingLineNumber = "128"
+                  offsetFromSymbolStart = "5252">
+               </Location>
+               <Location
+                  uuid = "C034272D-492C-402B-8E25-D695269D5961 - 7afcf263657d62a3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.makeButterflyTexture() -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "128"
+                  endingLineNumber = "128"
+                  offsetFromSymbolStart = "5512">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

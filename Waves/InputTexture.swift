@@ -10,7 +10,7 @@ import Metal
 import GameplayKit
 
 class InputTexture {
-    let N = 512;
+    let N: Int
     
     private var noiseTexture1: MTLTexture
     private var noiseTexture2: MTLTexture
@@ -18,7 +18,8 @@ class InputTexture {
     
     var h0ktexture: MTLTexture? = nil
 
-    init(commandQueue: MTLCommandQueue, windDirection: simd_float2) throws {
+    init(commandQueue: MTLCommandQueue, N: Int, windDirection: simd_float2) throws {
+        self.N = N
         self.noiseTexture1 = try InputTexture.makeNoiseTexture(N: N)
         self.noiseTexture2 = try InputTexture.makeNoiseTexture(N: N)
         
@@ -38,7 +39,7 @@ class InputTexture {
         
         let b = buffer.contents().bindMemory(to: Float.self, capacity: N * N * MemoryLayout<Float>.size)
         
-        for i in 0..<512*512 {
+        for i in 0..<N * N {
             b[i] = noise.nextUniform()
         }
         
@@ -60,7 +61,6 @@ class InputTexture {
             return
         }
         
-        let N = 512
         let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rg32Float, width: N, height: N, mipmapped: false);
         textureDescr.usage = [.shaderWrite, .shaderRead]
         
@@ -81,8 +81,7 @@ class InputTexture {
                     computeEncoder.setTexture(noiseTexture2, index: 1)
                     computeEncoder.setTexture(h0ktexture, index: 2)
                     
-                    let dimension = 512
-                    let threadsPerGrid = MTLSizeMake(dimension, dimension, 1)
+                    let threadsPerGrid = MTLSizeMake(N, N, 1)
                     
                     let width = pipeline.threadExecutionWidth
                     let height = pipeline.maxTotalThreadsPerThreadgroup / width
