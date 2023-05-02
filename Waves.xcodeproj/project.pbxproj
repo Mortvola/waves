@@ -23,6 +23,12 @@
 		79372A5629FC2472004FE219 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5529FC2472004FE219 /* Shaders.metal */; };
 		79372A5829FD6DC4004FE219 /* InputTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5729FD6DC4004FE219 /* InputTexture.swift */; };
 		79372A5A29FD716E004FE219 /* Rectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5929FD716E004FE219 /* Rectangle.swift */; };
+		79372A642A005E9A004FE219 /* Matrix3x3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A5F2A005E9A004FE219 /* Matrix3x3.swift */; };
+		79372A652A005E9A004FE219 /* Vec3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A602A005E9A004FE219 /* Vec3.swift */; };
+		79372A662A005E9A004FE219 /* Vec4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A612A005E9A004FE219 /* Vec4.swift */; };
+		79372A672A005E9A004FE219 /* Vec2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A622A005E9A004FE219 /* Vec2.swift */; };
+		79372A682A005E9A004FE219 /* Matrix4x4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A632A005E9A004FE219 /* Matrix4x4.swift */; };
+		79C8C95C2A007A5200BF851F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C95B2A007A5200BF851F /* Camera.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +69,13 @@
 		79372A5529FC2472004FE219 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		79372A5729FD6DC4004FE219 /* InputTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTexture.swift; sourceTree = "<group>"; };
 		79372A5929FD716E004FE219 /* Rectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rectangle.swift; sourceTree = "<group>"; };
+		79372A5B2A005678004FE219 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		79372A5F2A005E9A004FE219 /* Matrix3x3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix3x3.swift; sourceTree = "<group>"; };
+		79372A602A005E9A004FE219 /* Vec3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vec3.swift; sourceTree = "<group>"; };
+		79372A612A005E9A004FE219 /* Vec4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vec4.swift; sourceTree = "<group>"; };
+		79372A622A005E9A004FE219 /* Vec2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vec2.swift; sourceTree = "<group>"; };
+		79372A632A005E9A004FE219 /* Matrix4x4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix4x4.swift; sourceTree = "<group>"; };
+		79C8C95B2A007A5200BF851F /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +130,7 @@
 				79372A1E29FC1130004FE219 /* WavesApp.swift */,
 				79372A2029FC1130004FE219 /* ContentView.swift */,
 				79372A4929FC11BB004FE219 /* RenderView.swift */,
+				79C8C95B2A007A5200BF851F /* Camera.swift */,
 				79372A4B29FC1200004FE219 /* RenderViewController.swift */,
 				79372A5129FC13FD004FE219 /* MetalView.swift */,
 				79372A4D29FC1263004FE219 /* RenderDelegate.swift */,
@@ -125,6 +139,8 @@
 				79372A5729FD6DC4004FE219 /* InputTexture.swift */,
 				79372A5329FC20A3004FE219 /* Errors.swift */,
 				79372A5529FC2472004FE219 /* Shaders.metal */,
+				79372A5B2A005678004FE219 /* ShaderTypes.h */,
+				79372A5E2A005E9A004FE219 /* Math */,
 				79372A2229FC1132004FE219 /* Assets.xcassets */,
 				79372A2429FC1132004FE219 /* Preview Content */,
 			);
@@ -154,6 +170,18 @@
 				79372A3B29FC1133004FE219 /* WavesUITestsLaunchTests.swift */,
 			);
 			path = WavesUITests;
+			sourceTree = "<group>";
+		};
+		79372A5E2A005E9A004FE219 /* Math */ = {
+			isa = PBXGroup;
+			children = (
+				79372A5F2A005E9A004FE219 /* Matrix3x3.swift */,
+				79372A602A005E9A004FE219 /* Vec3.swift */,
+				79372A612A005E9A004FE219 /* Vec4.swift */,
+				79372A622A005E9A004FE219 /* Vec2.swift */,
+				79372A632A005E9A004FE219 /* Matrix4x4.swift */,
+			);
+			path = Math;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -224,6 +252,7 @@
 				TargetAttributes = {
 					79372A1A29FC1130004FE219 = {
 						CreatedOnToolsVersion = 14.3;
+						LastSwiftMigration = 1430;
 					};
 					79372A2A29FC1133004FE219 = {
 						CreatedOnToolsVersion = 14.3;
@@ -287,16 +316,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				79372A4C29FC1200004FE219 /* RenderViewController.swift in Sources */,
+				79372A662A005E9A004FE219 /* Vec4.swift in Sources */,
+				79C8C95C2A007A5200BF851F /* Camera.swift in Sources */,
 				79372A5229FC13FD004FE219 /* MetalView.swift in Sources */,
 				79372A5829FD6DC4004FE219 /* InputTexture.swift in Sources */,
 				79372A5A29FD716E004FE219 /* Rectangle.swift in Sources */,
 				79372A2129FC1130004FE219 /* ContentView.swift in Sources */,
+				79372A642A005E9A004FE219 /* Matrix3x3.swift in Sources */,
+				79372A672A005E9A004FE219 /* Vec2.swift in Sources */,
 				79372A1F29FC1130004FE219 /* WavesApp.swift in Sources */,
 				79372A5429FC20A3004FE219 /* Errors.swift in Sources */,
 				79372A4A29FC11BB004FE219 /* RenderView.swift in Sources */,
 				79372A5629FC2472004FE219 /* Shaders.metal in Sources */,
 				79372A5029FC1279004FE219 /* Renderer.swift in Sources */,
+				79372A652A005E9A004FE219 /* Vec3.swift in Sources */,
 				79372A4E29FC1263004FE219 /* RenderDelegate.swift in Sources */,
+				79372A682A005E9A004FE219 /* Matrix4x4.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -452,6 +487,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Waves/Waves.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -475,6 +511,8 @@
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = Waves/ShaderTypes.h;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -485,6 +523,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Waves/Waves.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -508,6 +547,7 @@
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = Waves/ShaderTypes.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

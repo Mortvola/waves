@@ -6,6 +6,8 @@
 //
 
 #include <metal_stdlib>
+#include "ShaderTypes.h"
+
 using namespace metal;
 
 struct VertexIn {
@@ -16,9 +18,13 @@ struct VertexIn {
 struct VertexOut {
     float4 position [[ position ]];
     float2 texcoord;
+    uint id;
 };
 
-vertex VertexOut vertexShader(VertexIn in [[stage_in]]) {
+vertex VertexOut vertexShader(
+                              VertexIn in [[ stage_in ]]
+                              )
+{
     VertexOut out;
     
     out.position = float4(in.position.x / 512.0, in.position.y / 512.0, 0, 1);
@@ -38,6 +44,34 @@ fragment float4 fragmentShader(
     out = tex.sample(sampler, in.texcoord);
     
     return out;
+}
+
+vertex VertexOut vertexWaveShader(
+                                  VertexIn in [[ stage_in ]],
+                                  const device FrameConstants& frameConstants [[ buffer(BufferIndexFrameConstants) ]],
+                                  uint vertexId [[ vertex_id ]],
+                                  texture2d<float, access::read> height [[ texture(3) ]]
+                                  )
+{
+    VertexOut out;
+    
+    int x = vertexId % 256;
+    int y = vertexId / 256;
+    
+    float4 h = height.read(uint2(x, y));
+    
+    out.position = frameConstants.projectionMatrix * frameConstants.viewMatrix * float4(in.position.x, in.position.y + h.x / 700.0, in.position.z, 1.0);
+    out.texcoord = in.texcoord;
+//    out.id = id;
+
+    return out;
+}
+
+fragment float4 fragmentWaterShader(
+                                    VertexOut in [[ stage_in ]]
+                                    )
+{
+    return float4(1, 0, 0, 1);
 }
 
 float2 ComplexMultiply(float2 a, float2 b)
@@ -65,10 +99,6 @@ kernel void makeButterflyTexture(
     
     output.write(float4(w.x, w.y, index1, index2), tpig);
 }
-
-struct Params {
-    float2 windDirection;
-};
 
 kernel void inverseHorzFFTStage(
                             const device int &stage [[ buffer(0) ]],
@@ -114,15 +144,12 @@ kernel void makeInputTexture(
                              uint2 tpig [[ thread_position_in_grid ]]
                              )
 {
-    float A = 20;
+    float A = 10;
     float L = 1000;
     float N = output.get_width();
     
-    // Wind speed
-    float V = 5; // meters per second
-
     float g = 9.8; // meters per second^2
-    float L2 = (V * V) / g; // (m^2 / s) * (s^2 / m) --> meter seconds
+    float L2 = (params.windSpeed * params.windSpeed) / g; // (m^2 / s) * (s^2 / m) --> meter seconds
     
     float l = 0.25;
     

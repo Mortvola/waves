@@ -18,14 +18,14 @@ class InputTexture {
     
     var h0ktexture: MTLTexture? = nil
 
-    init(commandQueue: MTLCommandQueue, N: Int, windDirection: simd_float2) throws {
+    init(commandQueue: MTLCommandQueue, N: Int, windDirection: simd_float2, windSpeed: Float) throws {
         self.N = N
         self.noiseTexture1 = try InputTexture.makeNoiseTexture(N: N)
         self.noiseTexture2 = try InputTexture.makeNoiseTexture(N: N)
         
-        self.params = MetalView.shared.device.makeBuffer(length: MemoryLayout<simd_float2>.size)!
+        self.params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Params>.size)!
         
-        makeTexture(commandQueue: commandQueue, windDirection: windDirection)
+        makeTexture(commandQueue: commandQueue, windDirection: windDirection, windSpeed: windSpeed)
     }
     
     class func makeNoiseTexture(N: Int) throws -> MTLTexture {
@@ -54,7 +54,7 @@ class InputTexture {
         return texture;
     }
     
-    func makeTexture(commandQueue: MTLCommandQueue, windDirection: simd_float2) {
+    func makeTexture(commandQueue: MTLCommandQueue, windDirection: simd_float2, windSpeed: Float) {
         let library = MetalView.shared.device.makeDefaultLibrary()
 
         guard let function = library?.makeFunction(name: "makeInputTexture") else {
@@ -73,8 +73,9 @@ class InputTexture {
                     
                     computeEncoder.setComputePipelineState(pipeline)
                     
-                    let p = params.contents().bindMemory(to: simd_float2.self, capacity: MemoryLayout<simd_float2>.size)
-                    p[0] = windDirection
+                    let p = params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
+                    p[0].windDirection = windDirection
+                    p[0].windSpeed = windSpeed
                     
                     computeEncoder.setBuffer(params, offset: 0, index: 0)
                     computeEncoder.setTexture(noiseTexture1, index: 0)

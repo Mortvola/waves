@@ -17,11 +17,12 @@ class Renderer {
     private var commandQueue: MTLCommandQueue?
     private var tripleBufferIndex = 0
 
-    private var N = 512
+    private var N = 256
     
     private let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
 
     private var pipelineState: MTLRenderPipelineState? = nil
+    private var wavePipelineState: MTLRenderPipelineState? = nil
     
     private var sampler: MTLSamplerState? = nil
     
@@ -32,10 +33,14 @@ class Renderer {
     private var previousFrameTime: Double?
     
     private var h0ktTexture: [MTLTexture] = []
+    private var pingpong = 0
+
+    private var testTexture: [MTLTexture] = []
 
     private var updatePipeline: MTLComputePipelineState? = nil
 
     private var params: MTLBuffer? = nil
+    private var frameConstants: MTLBuffer? = nil
     
     private var inputTexture1: InputTexture? = nil
     private var inputTexture2: InputTexture? = nil
@@ -43,47 +48,71 @@ class Renderer {
     private var butterflyTexture: MTLTexture? = nil
     private var inverseHorzFFTPipeline: MTLComputePipelineState? = nil
     private var inverseVertFFTPipeline: MTLComputePipelineState? = nil
-
+    
+    private var wave: MTKMesh? = nil
+    
+    private var camera: Camera = Camera()
+    
     func initialize() throws {
-        guard let queue = MetalView.shared.device.makeCommandQueue() else {
-            throw Errors.makeCommandQueueFailed
+        do {
+            guard let queue = MetalView.shared.device.makeCommandQueue() else {
+                throw Errors.makeCommandQueueFailed
+            }
+            
+            self.commandQueue = queue
+            
+            self.pipelineState = try makePipeline()
+            self.wavePipelineState = try makeWavePipeline()
+            
+            self.sampler = try makeSampler()
+            
+            let windDiretion = simd_float2(0, 1)
+            let windSpeed: Float = 3.75;
+            
+            inputTexture1 = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: windDiretion, windSpeed: windSpeed)
+            inputTexture2 = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: -windDiretion, windSpeed: windSpeed)
+            
+            self.rectangle1 = Rectangle(texture: inputTexture1!.h0ktexture!, size: Float(N), offset: simd_float2(-Float(N), 0))
+            self.rectangle2 = Rectangle(texture: inputTexture2!.h0ktexture!, size: Float(N), offset: simd_float2(0, 0))
+            
+            let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rg32Float, width: N, height: N, mipmapped: false);
+            textureDescr.usage = [.shaderWrite, .shaderRead]
+            
+            h0ktTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
+            h0ktTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
+
+            testTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
+            testTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
+
+            let library = MetalView.shared.device.makeDefaultLibrary()
+            
+            guard let function = library?.makeFunction(name: "makeTimeTexture") else {
+                return
+            }
+            
+            updatePipeline = try MetalView.shared.device.makeComputePipelineState(function: function)
+            
+            params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Float>.size)!
+            
+            self.rectangle3 = Rectangle(texture: h0ktTexture[0], size: Float(N), offset: simd_float2(-Float(N), -Float(N)));
+            
+            makeButterflyTexture()
+            
+            makeInverseFFTPipelines()
+            
+            wave = try allocatePlane(dimensions: simd_float2(Float(N * 2), Float(N * 2)), segments: simd_uint2(UInt32(N - 1), UInt32(N - 1)))
+            
+            frameConstants = MetalView.shared.device.makeBuffer(length: MemoryLayout<FrameConstants>.size)!
+            
+            camera.cameraOffset.y = 40
+            camera.cameraOffset.z = -250
+            
+            camera.updateLookAt(yawChange: 0, pitchChange: 25)
         }
-        
-        self.commandQueue = queue
-        
-        self.pipelineState = try makePipeline()
-        
-        self.sampler = try makeSampler()
-
-        let windDiretion = simd_float2(1, 1)
-        
-        inputTexture1 = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: windDiretion)
-        inputTexture2 = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: -windDiretion)
-        
-        self.rectangle1 = Rectangle(texture: inputTexture1!.h0ktexture!, size: Float(N), offset: simd_float2(-Float(N), 0))
-        self.rectangle2 = Rectangle(texture: inputTexture2!.h0ktexture!, size: Float(N), offset: simd_float2(0, 0))
-        
-        let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rg32Float, width: N, height: N, mipmapped: false);
-        textureDescr.usage = [.shaderWrite, .shaderRead]
-        
-        h0ktTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
-        h0ktTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
-
-        let library = MetalView.shared.device.makeDefaultLibrary()
-
-        guard let function = library?.makeFunction(name: "makeTimeTexture") else {
-            return
+        catch{
+            print(error)
+            throw error
         }
-                
-        updatePipeline = try MetalView.shared.device.makeComputePipelineState(function: function)
-        
-        params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Float>.size)!
-        
-        self.rectangle3 = Rectangle(texture: h0ktTexture[0], size: Float(N), offset: simd_float2(-Float(N), -Float(N)));
-        
-        makeButterflyTexture()
-        
-        makeInverseFFTPipelines()
     }
 
     func makeInverseFFTPipelines() {
@@ -186,7 +215,33 @@ class Renderer {
                 
         return try MetalView.shared.device.makeRenderPipelineState(descriptor: descr)
     }
-    
+
+    func makeWavePipeline() throws -> MTLRenderPipelineState {
+        let vertexDescriptor = buildVertexDescriptor();
+        
+        let library = MetalView.shared.device.makeDefaultLibrary()
+        
+        let vertexFunction = library?.makeFunction(name: "vertexWaveShader")
+        let fragmentFunction = library?.makeFunction(name: "fragmentWaterShader")
+        
+        if vertexFunction == nil || fragmentFunction == nil {
+            throw Errors.makeFunctionError
+        }
+
+        let descr = MTLRenderPipelineDescriptor()
+        descr.label = "Wave"
+        descr.rasterSampleCount = MetalView.shared.view!.sampleCount
+        descr.vertexFunction = vertexFunction
+        descr.fragmentFunction = fragmentFunction
+        descr.vertexDescriptor = vertexDescriptor
+        
+        descr.colorAttachments[0].pixelFormat = MetalView.shared.view!.colorPixelFormat
+        descr.depthAttachmentPixelFormat = MetalView.shared.view!.depthStencilPixelFormat
+        descr.stencilAttachmentPixelFormat = MTLPixelFormat.invalid
+                
+        return try MetalView.shared.device.makeRenderPipelineState(descriptor: descr)
+    }
+
     func makeSampler() throws -> MTLSamplerState {
         let samplerDescriptor = MTLSamplerDescriptor()
         samplerDescriptor.normalizedCoordinates = true
@@ -217,53 +272,6 @@ class Renderer {
         }
         
         return nil
-    }
-
-    func render(in view: MTKView) throws {
-        guard let commandQueue = self.commandQueue else {
-            return
-        }
-        
-        guard let pipelineState = self.pipelineState else {
-            return
-        }
-        
-        guard let rectangle1 = rectangle1, let rectangle2 = rectangle2, let rectangle3 = rectangle3 else {
-            return
-        }
-        
-        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
-        
-        updateTexture(commandQueue: commandQueue);
-        
-        if let commandBuffer = commandQueue.makeCommandBuffer() {
-            commandBuffer.label = "\(self.tripleBufferIndex)"
-            
-            if let renderPassDescriptor = view.currentRenderPassDescriptor {
-                if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
-                    // Render stuff...
-                    
-                    renderEncoder.setRenderPipelineState(pipelineState)
-                    
-                    rectangle1.draw(renderEncoder: renderEncoder, sampler: sampler!)
-                    rectangle2.draw(renderEncoder: renderEncoder, sampler: sampler!)
-                    rectangle3.draw(renderEncoder: renderEncoder, sampler: sampler!)
-
-                    renderEncoder.endEncoding()
-                }
-
-                if let drawable = view.currentDrawable {
-                    commandBuffer.present(drawable)
-                }
-            }
-
-            let semaphore = inFlightSemaphore
-            commandBuffer.addCompletedHandler { (_ commandBuffer)-> Swift.Void in
-                semaphore.signal()
-            }
-            
-            commandBuffer.commit()
-        }
     }
     
     func updateTexture(commandQueue: MTLCommandQueue) {
@@ -302,9 +310,7 @@ class Renderer {
                 computeEncoder.setTexture(butterflyTexture, index: 2)
 
                 let stages = Int(log2(Float(N)))
-                
-                var pingpong = 0
-                
+                                
                 for stage in 0..<stages {
                     computeEncoder.setTexture(h0ktTexture[pingpong], index: 0)
                     computeEncoder.setTexture(h0ktTexture[pingpong ^ 1], index: 1)
@@ -339,6 +345,160 @@ class Renderer {
         }
     }
 
-    public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+    func updateFrameConstants() {
+        let constants = UnsafeMutableRawPointer(frameConstants!.contents()).bindMemory(to: FrameConstants.self, capacity: 1)
+
+        constants[0].projectionMatrix = camera.projectionMatrix
+        constants[0].viewMatrix = camera.getViewMatrix()
     }
+    
+    func render(in view: MTKView) throws {
+        guard let commandQueue = self.commandQueue else {
+            return
+        }
+        
+        guard
+//            let pipelineState = self.pipelineState,
+            let wavePipelineState = self.wavePipelineState
+        else {
+            return
+        }
+        
+//        guard let rectangle1 = rectangle1, let rectangle2 = rectangle2, let rectangle3 = rectangle3 else {
+//            return
+//        }
+//
+//        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+        
+        updateTexture(commandQueue: commandQueue);
+        
+        if frameConstants == nil {
+            return
+        }
+        
+        updateFrameConstants()
+        
+        if let commandBuffer = commandQueue.makeCommandBuffer() {
+            commandBuffer.label = "\(self.tripleBufferIndex)"
+            
+            if let renderPassDescriptor = view.currentRenderPassDescriptor {
+                if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
+                    // Render stuff...
+                    
+//                    renderEncoder.setRenderPipelineState(pipelineState)
+                    
+//                    rectangle1.draw(renderEncoder: renderEncoder, sampler: sampler!)
+//                    rectangle2.draw(renderEncoder: renderEncoder, sampler: sampler!)
+//                    rectangle3.draw(renderEncoder: renderEncoder, sampler: sampler!)
+
+                    renderEncoder.setRenderPipelineState(wavePipelineState)
+                    
+                    renderEncoder.setVertexBuffer(frameConstants, offset: 0, index: BufferIndex.frameConstants.rawValue)
+                    
+                    renderEncoder.setTriangleFillMode(.lines)
+                    
+                    renderEncoder.setVertexTexture(h0ktTexture[pingpong ^ 1], index: 3)
+
+                    // Pass the vertex and index information to the vertex shader
+                    for (i, buffer) in wave!.vertexBuffers.enumerated() {
+                        renderEncoder.setVertexBuffer(buffer.buffer, offset: buffer.offset, index: i)
+                    }
+                    
+                    for submesh in wave!.submeshes {
+                        renderEncoder.drawIndexedPrimitives(type: submesh.primitiveType, indexCount: submesh.indexCount, indexType: submesh.indexType, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: submesh.indexBuffer.offset, instanceCount: 1)
+                    }
+
+                    renderEncoder.endEncoding()
+                }
+
+                if let drawable = view.currentDrawable {
+                    commandBuffer.present(drawable)
+                }
+            }
+
+//            let semaphore = inFlightSemaphore
+//            commandBuffer.addCompletedHandler { (_ commandBuffer)-> Swift.Void in
+//                semaphore.signal()
+//            }
+            
+            commandBuffer.commit()
+        }
+    }
+
+//    func updateViewDimensions() {
+//        /// Respond to drawable size or orientation changes here
+//        let width = MetalView.shared.width
+//        let height = MetalView.shared.height
+//
+//        if width != 0 && height != 0 {
+//            let fovy: Float = degreesToRadians(45.0)
+//            let aspect = Float(height) / Float(width)
+//
+//            self.projectionMatrix = Matrix4x4.perspectiveLeftHand(fovyRadians: fovy, aspect: aspect, nearZ: nearZ, farZ: farZ)
+//        }
+//    }
+
+    public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        MetalView.shared.width = Float(size.width)
+        MetalView.shared.height = Float(size.height)
+
+        camera.updateViewDimensions()
+    }
+}
+
+func allocatePlane(dimensions: simd_float2, segments: simd_uint2) throws -> MTKMesh {
+    let meshBufferAllocator = MTKMeshBufferAllocator(device: MetalView.shared.device)
+
+    let mesh = MDLMesh.newPlane(withDimensions: dimensions, segments: segments, geometryType: .triangles, allocator: meshBufferAllocator)
+
+//    mesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate, normalAttributeNamed: MDLVertexAttributeNormal, tangentAttributeNamed: MDLVertexAttributeTangent)
+
+    mesh.vertexDescriptor = vertexDescriptor()
+    
+    return try MTKMesh(mesh: mesh, device: MetalView.shared.device)
+}
+
+
+func vertexDescriptor() -> MDLVertexDescriptor {
+    let vertexDescriptor = MDLVertexDescriptor()
+    
+    var vertexAttributes = MDLVertexAttribute()
+    vertexAttributes.name = MDLVertexAttributePosition
+    vertexAttributes.format = .float3
+    vertexAttributes.offset = 0
+    vertexAttributes.bufferIndex = 0
+    
+    vertexDescriptor.attributes[0] = vertexAttributes
+            
+    vertexAttributes = MDLVertexAttribute()
+    vertexAttributes.name = MDLVertexAttributeTextureCoordinate
+    vertexAttributes.format = .float2
+    vertexAttributes.offset = 0
+    vertexAttributes.bufferIndex = 1
+    
+    vertexDescriptor.attributes[1] = vertexAttributes
+
+//    vertexAttributes = MDLVertexAttribute()
+//    vertexAttributes.name = MDLVertexAttributeNormal
+//    vertexAttributes.format = .float3
+//    vertexAttributes.offset = 0
+//    vertexAttributes.bufferIndex = BufferIndex.normals.rawValue
+//    vertexDescriptor.attributes[VertexAttribute.normal.rawValue] = vertexAttributes
+//
+//    vertexAttributes = MDLVertexAttribute()
+//    vertexAttributes.name = MDLVertexAttributeTangent
+//    vertexAttributes.format = .float3
+//    vertexAttributes.offset = MemoryLayout<simd_float3>.stride
+//    vertexAttributes.bufferIndex = BufferIndex.normals.rawValue
+//    vertexDescriptor.attributes[VertexAttribute.tangent.rawValue] = vertexAttributes
+
+    var vertexBufferLayout = MDLVertexBufferLayout()
+    vertexBufferLayout.stride = MemoryLayout<simd_float3>.stride
+    vertexDescriptor.layouts[0] = vertexBufferLayout
+
+    vertexBufferLayout = MDLVertexBufferLayout()
+    vertexBufferLayout.stride = MemoryLayout<simd_float2>.stride
+    vertexDescriptor.layouts[1] = vertexBufferLayout
+    
+    return vertexDescriptor
 }
