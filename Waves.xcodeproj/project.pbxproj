@@ -29,6 +29,11 @@
 		79372A672A005E9A004FE219 /* Vec2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A622A005E9A004FE219 /* Vec2.swift */; };
 		79372A682A005E9A004FE219 /* Matrix4x4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79372A632A005E9A004FE219 /* Matrix4x4.swift */; };
 		79C8C95C2A007A5200BF851F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C95B2A007A5200BF851F /* Camera.swift */; };
+		79C8C95E2A00B34400BF851F /* TestFFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C95D2A00B34400BF851F /* TestFFT.swift */; };
+		79C8C9602A0134DC00BF851F /* FourierShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C95F2A0134DC00BF851F /* FourierShaders.metal */; };
+		79C8C9622A01351B00BF851F /* Complex.metal in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C9612A01351B00BF851F /* Complex.metal */; };
+		79C8C9642A01356300BF851F /* Complex.h in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C9632A01356300BF851F /* Complex.h */; };
+		79C8C9662A01465400BF851F /* Butterfly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C9652A01465400BF851F /* Butterfly.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +81,11 @@
 		79372A622A005E9A004FE219 /* Vec2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vec2.swift; sourceTree = "<group>"; };
 		79372A632A005E9A004FE219 /* Matrix4x4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix4x4.swift; sourceTree = "<group>"; };
 		79C8C95B2A007A5200BF851F /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
+		79C8C95D2A00B34400BF851F /* TestFFT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFFT.swift; sourceTree = "<group>"; };
+		79C8C95F2A0134DC00BF851F /* FourierShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = FourierShaders.metal; sourceTree = "<group>"; };
+		79C8C9612A01351B00BF851F /* Complex.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Complex.metal; sourceTree = "<group>"; };
+		79C8C9632A01356300BF851F /* Complex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Complex.h; sourceTree = "<group>"; };
+		79C8C9652A01465400BF851F /* Butterfly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Butterfly.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,10 +145,15 @@
 				79372A5129FC13FD004FE219 /* MetalView.swift */,
 				79372A4D29FC1263004FE219 /* RenderDelegate.swift */,
 				79372A4F29FC1279004FE219 /* Renderer.swift */,
+				79C8C9652A01465400BF851F /* Butterfly.swift */,
+				79C8C95D2A00B34400BF851F /* TestFFT.swift */,
 				79372A5929FD716E004FE219 /* Rectangle.swift */,
 				79372A5729FD6DC4004FE219 /* InputTexture.swift */,
 				79372A5329FC20A3004FE219 /* Errors.swift */,
 				79372A5529FC2472004FE219 /* Shaders.metal */,
+				79C8C9612A01351B00BF851F /* Complex.metal */,
+				79C8C9632A01356300BF851F /* Complex.h */,
+				79C8C95F2A0134DC00BF851F /* FourierShaders.metal */,
 				79372A5B2A005678004FE219 /* ShaderTypes.h */,
 				79372A5E2A005E9A004FE219 /* Math */,
 				79372A2229FC1132004FE219 /* Assets.xcassets */,
@@ -320,16 +335,21 @@
 				79C8C95C2A007A5200BF851F /* Camera.swift in Sources */,
 				79372A5229FC13FD004FE219 /* MetalView.swift in Sources */,
 				79372A5829FD6DC4004FE219 /* InputTexture.swift in Sources */,
+				79C8C9602A0134DC00BF851F /* FourierShaders.metal in Sources */,
+				79C8C9622A01351B00BF851F /* Complex.metal in Sources */,
 				79372A5A29FD716E004FE219 /* Rectangle.swift in Sources */,
 				79372A2129FC1130004FE219 /* ContentView.swift in Sources */,
 				79372A642A005E9A004FE219 /* Matrix3x3.swift in Sources */,
 				79372A672A005E9A004FE219 /* Vec2.swift in Sources */,
 				79372A1F29FC1130004FE219 /* WavesApp.swift in Sources */,
 				79372A5429FC20A3004FE219 /* Errors.swift in Sources */,
+				79C8C9662A01465400BF851F /* Butterfly.swift in Sources */,
 				79372A4A29FC11BB004FE219 /* RenderView.swift in Sources */,
 				79372A5629FC2472004FE219 /* Shaders.metal in Sources */,
 				79372A5029FC1279004FE219 /* Renderer.swift in Sources */,
+				79C8C95E2A00B34400BF851F /* TestFFT.swift in Sources */,
 				79372A652A005E9A004FE219 /* Vec3.swift in Sources */,
+				79C8C9642A01356300BF851F /* Complex.h in Sources */,
 				79372A4E29FC1263004FE219 /* RenderDelegate.swift in Sources */,
 				79372A682A005E9A004FE219 /* Matrix4x4.swift in Sources */,
 			);

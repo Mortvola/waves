@@ -38,4 +38,9 @@ struct Params {
     float windSpeed;
 };
 
+struct InverseFFTParams {
+    int stage;
+    int lastStage;
+};
+
 #endif // ShaderTypes_h
