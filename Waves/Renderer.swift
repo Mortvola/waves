@@ -405,7 +405,9 @@ class Renderer {
                     
                     renderEncoder.setVertexBuffer(frameConstants, offset: 0, index: BufferIndex.frameConstants.rawValue)
                     
-                    renderEncoder.setTriangleFillMode(.lines)
+                    if Settings.shared.wireframe {
+                        renderEncoder.setTriangleFillMode(.lines)
+                    }
                     
                     renderEncoder.setVertexTexture(h0ktTexture[pingpong ^ 1], index: 3)
 

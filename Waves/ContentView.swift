@@ -8,8 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject var settings = Settings.shared
+    
     var body: some View {
-        RenderView()
+        ZStack {
+            RenderView()
+            VStack {
+                HStack {
+                    Checkbox(checked: $settings.wireframe, label: "Wireframe")
+                        .foregroundColor(.white)
+                        .padding()
+                    Spacer()
+                }
+                Spacer()
+            }
+        }
     }
 }
 
