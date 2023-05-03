@@ -12,6 +12,9 @@ import GameplayKit
 class InputTexture {
     let N: Int
     
+    var windspeed: Float
+    var windDirection: Float
+    
     private var noiseTexture1: MTLTexture
     private var noiseTexture2: MTLTexture
     private var noiseTexture3: MTLTexture
@@ -20,7 +23,7 @@ class InputTexture {
     
     var h0ktexture: MTLTexture? = nil
 
-    init(commandQueue: MTLCommandQueue, N: Int, windDirection: simd_float2, windSpeed: Float) throws {
+    init(commandQueue: MTLCommandQueue, N: Int, windDirection: Float, windSpeed: Float) throws {
         self.N = N
         self.noiseTexture1 = try InputTexture.makeNoiseTexture(N: N)
         self.noiseTexture2 = try InputTexture.makeNoiseTexture(N: N)
@@ -28,6 +31,9 @@ class InputTexture {
         self.noiseTexture4 = try InputTexture.makeNoiseTexture(N: N)
 
         self.params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Params>.size)!
+        
+        self.windspeed = windSpeed
+        self.windDirection = windDirection
         
         makeTexture(commandQueue: commandQueue, windDirection: windDirection, windSpeed: windSpeed)
     }
@@ -58,7 +64,7 @@ class InputTexture {
         return texture;
     }
     
-    func makeTexture(commandQueue: MTLCommandQueue, windDirection: simd_float2, windSpeed: Float) {
+    func makeTexture(commandQueue: MTLCommandQueue, windDirection: Float, windSpeed: Float) {
         let library = MetalView.shared.device.makeDefaultLibrary()
 
         guard let function = library?.makeFunction(name: "makeInputTexture") else {
@@ -78,7 +84,7 @@ class InputTexture {
                     computeEncoder.setComputePipelineState(pipeline)
                     
                     let p = params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
-                    p[0].windDirection = windDirection
+                    p[0].windDirection = simd_float2(cos(windDirection / 180 * Float.pi), sin(windDirection / 360 * Float.pi))
                     p[0].windSpeed = windSpeed
                     
                     computeEncoder.setBuffer(params, offset: 0, index: 0)
@@ -103,5 +109,8 @@ class InputTexture {
                 }
             }
         }
+        
+        self.windspeed = windSpeed
+        self.windDirection = windDirection
     }
 }

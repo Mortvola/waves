@@ -69,10 +69,7 @@ class Renderer {
             
             self.sampler = try makeSampler()
             
-            let windDiretion = simd_float2(0, 1)
-            let windSpeed: Float = 10; // 3.75;
-            
-            inputTexture = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: windDiretion, windSpeed: windSpeed)
+            inputTexture = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: Settings.shared.windDirection, windSpeed: Settings.shared.windspeed)
             
             self.rectangle1 = Rectangle(texture: inputTexture!.h0ktexture!, size: Float(N), offset: simd_float2(-Float(N), 0))
             self.rectangle2 = Rectangle(texture: inputTexture!.h0ktexture!, size: Float(N), offset: simd_float2(0, 0))
@@ -251,6 +248,11 @@ class Renderer {
 
         if inverseFFTDividePipeline == nil {
             return
+        }
+        
+        if Settings.shared.windspeed != inputTexture?.windspeed ||
+            Settings.shared.windDirection != inputTexture?.windDirection {
+            inputTexture?.makeTexture(commandQueue: commandQueue, windDirection: Settings.shared.windDirection, windSpeed: Settings.shared.windspeed)
         }
 
         if let commandBuffer = commandQueue.makeCommandBuffer() {
