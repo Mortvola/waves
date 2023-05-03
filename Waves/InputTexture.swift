@@ -14,6 +14,8 @@ class InputTexture {
     
     private var noiseTexture1: MTLTexture
     private var noiseTexture2: MTLTexture
+    private var noiseTexture3: MTLTexture
+    private var noiseTexture4: MTLTexture
     private var params: MTLBuffer
     
     var h0ktexture: MTLTexture? = nil
@@ -22,16 +24,18 @@ class InputTexture {
         self.N = N
         self.noiseTexture1 = try InputTexture.makeNoiseTexture(N: N)
         self.noiseTexture2 = try InputTexture.makeNoiseTexture(N: N)
-        
+        self.noiseTexture3 = try InputTexture.makeNoiseTexture(N: N)
+        self.noiseTexture4 = try InputTexture.makeNoiseTexture(N: N)
+
         self.params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Params>.size)!
         
         makeTexture(commandQueue: commandQueue, windDirection: windDirection, windSpeed: windSpeed)
     }
     
     class func makeNoiseTexture(N: Int) throws -> MTLTexture {
-        let t = Date().timeIntervalSince1970
+        let seed = Date().timeIntervalSince1970
         
-        let noise = GKGaussianDistribution(randomSource: GKARC4RandomSource(seed: "\(t)".data(using: .utf8)!), mean: 0, deviation: 1)
+        let noise = GKGaussianDistribution(randomSource: GKARC4RandomSource(seed: "\(seed)".data(using: .utf8)!), mean: 0, deviation: 1)
 
         guard let buffer = MetalView.shared.device.makeBuffer(length: N * N * MemoryLayout<Float>.size, options: .storageModeShared) else {
             throw Errors.makeFunctionError
@@ -61,7 +65,7 @@ class InputTexture {
             return
         }
         
-        let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rg32Float, width: N, height: N, mipmapped: false);
+        let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: N, height: N, mipmapped: false);
         textureDescr.usage = [.shaderWrite, .shaderRead]
         
         h0ktexture = MetalView.shared.device.makeTexture(descriptor: textureDescr)
@@ -80,7 +84,9 @@ class InputTexture {
                     computeEncoder.setBuffer(params, offset: 0, index: 0)
                     computeEncoder.setTexture(noiseTexture1, index: 0)
                     computeEncoder.setTexture(noiseTexture2, index: 1)
-                    computeEncoder.setTexture(h0ktexture, index: 2)
+                    computeEncoder.setTexture(noiseTexture3, index: 2)
+                    computeEncoder.setTexture(noiseTexture4, index: 3)
+                    computeEncoder.setTexture(h0ktexture, index: 4)
                     
                     let threadsPerGrid = MTLSizeMake(N, N, 1)
                     

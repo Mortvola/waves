@@ -42,8 +42,7 @@ class Renderer {
     private var params: MTLBuffer? = nil
     private var frameConstants: MTLBuffer? = nil
     
-    private var inputTexture1: InputTexture? = nil
-    private var inputTexture2: InputTexture? = nil
+    private var inputTexture: InputTexture? = nil
     
     private var butterflyTexture: MTLTexture? = nil
     private var inverseHorzFFTPipeline: MTLComputePipelineState? = nil
@@ -73,11 +72,10 @@ class Renderer {
             let windDiretion = simd_float2(0, 1)
             let windSpeed: Float = 10; // 3.75;
             
-            inputTexture1 = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: windDiretion, windSpeed: windSpeed)
-            inputTexture2 = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: -windDiretion, windSpeed: windSpeed)
+            inputTexture = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: windDiretion, windSpeed: windSpeed)
             
-            self.rectangle1 = Rectangle(texture: inputTexture1!.h0ktexture!, size: Float(N), offset: simd_float2(-Float(N), 0))
-            self.rectangle2 = Rectangle(texture: inputTexture2!.h0ktexture!, size: Float(N), offset: simd_float2(0, 0))
+            self.rectangle1 = Rectangle(texture: inputTexture!.h0ktexture!, size: Float(N), offset: simd_float2(-Float(N), 0))
+            self.rectangle2 = Rectangle(texture: inputTexture!.h0ktexture!, size: Float(N), offset: simd_float2(0, 0))
             
             let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rg32Float, width: N, height: N, mipmapped: false);
             textureDescr.usage = [.shaderWrite, .shaderRead]
@@ -265,9 +263,8 @@ class Renderer {
                 p[0] = Float(getTime())
                 
                 computeEncoder.setBuffer(params, offset: 0, index: 0)
-                computeEncoder.setTexture(inputTexture1?.h0ktexture, index: 0)
-                computeEncoder.setTexture(inputTexture2?.h0ktexture, index: 1)
-                computeEncoder.setTexture(h0ktTexture[0], index: 3)
+                computeEncoder.setTexture(inputTexture?.h0ktexture, index: 0)
+                computeEncoder.setTexture(h0ktTexture[0], index: 1)
                 
                 let threadsPerGrid = MTLSizeMake(N, N, 1)
                 
@@ -330,8 +327,8 @@ class Renderer {
 
         let threadsPerGrid = MTLSizeMake(N, N, 1)
         
-        let width = updatePipeline!.threadExecutionWidth
-        let height = updatePipeline!.maxTotalThreadsPerThreadgroup / width
+        let width = inverseFFTDividePipeline!.threadExecutionWidth
+        let height = inverseFFTDividePipeline!.maxTotalThreadsPerThreadgroup / width
         
         let threadsPerGroup = MTLSizeMake(width, height, 1)
 
