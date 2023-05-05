@@ -36,6 +36,7 @@
 		79C8C9662A01465400BF851F /* Butterfly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C9652A01465400BF851F /* Butterfly.swift */; };
 		79C8C9682A02886000BF851F /* Checkbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C9672A02886000BF851F /* Checkbox.swift */; };
 		79C8C96A2A028A6900BF851F /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C9692A028A6900BF851F /* Settings.swift */; };
+		79C8C96C2A03071D00BF851F /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C96B2A03071D00BF851F /* Fourier.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +91,7 @@
 		79C8C9652A01465400BF851F /* Butterfly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Butterfly.swift; sourceTree = "<group>"; };
 		79C8C9672A02886000BF851F /* Checkbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Checkbox.swift; sourceTree = "<group>"; };
 		79C8C9692A028A6900BF851F /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		79C8C96B2A03071D00BF851F /* Fourier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fourier.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +154,7 @@
 				79372A4F29FC1279004FE219 /* Renderer.swift */,
 				79C8C9652A01465400BF851F /* Butterfly.swift */,
 				79C8C95D2A00B34400BF851F /* TestFFT.swift */,
+				79C8C96B2A03071D00BF851F /* Fourier.swift */,
 				79C8C9692A028A6900BF851F /* Settings.swift */,
 				79372A5929FD716E004FE219 /* Rectangle.swift */,
 				79372A5729FD6DC4004FE219 /* InputTexture.swift */,
@@ -343,6 +346,7 @@
 				79372A5829FD6DC4004FE219 /* InputTexture.swift in Sources */,
 				79C8C9602A0134DC00BF851F /* FourierShaders.metal in Sources */,
 				79C8C9622A01351B00BF851F /* Complex.metal in Sources */,
+				79C8C96C2A03071D00BF851F /* Fourier.swift in Sources */,
 				79C8C9682A02886000BF851F /* Checkbox.swift in Sources */,
 				79372A5A29FD716E004FE219 /* Rectangle.swift in Sources */,
 				79372A2129FC1130004FE219 /* ContentView.swift in Sources */,

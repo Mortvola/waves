@@ -10,51 +10,19 @@ import Metal
 import GameplayKit
 
 class TestFFT {
-    private var N: Int
+    let N: Int
     
-    private var butterflyTexture: MTLTexture
-    private var inverseButterflyTexture: MTLTexture
-
     private var testTexture: [MTLTexture] = []
     
-    private var horzFFTPipeline: MTLComputePipelineState? = nil
-    
-    private var inverseHorzFFTPipeline: MTLComputePipelineState? = nil
-    
-    private var inverseFFTDividePipeline: MTLComputePipelineState? = nil
+    private var fft: Fourier
     
     init(N: Int, commandQueue: MTLCommandQueue) throws {
         self.N = N
         
-        butterflyTexture = try makeButterflyTexture(N: N, inverse: false, commandQueue: commandQueue)
-        inverseButterflyTexture = try makeButterflyTexture(N: N, inverse: true, commandQueue: commandQueue)
-
+        fft = try Fourier(M: N, N: N, commandQueue: commandQueue)
+        
         testTexture.append(try makeTexture())
         testTexture.append(try makeTexture())
-        
-        try makeInverseFFTPipelines()
-    }
-    
-    func makeInverseFFTPipelines() throws {
-        let library = MetalView.shared.device.makeDefaultLibrary()
-
-        guard let horzFunction = library?.makeFunction(name: "horzFFTStage") else {
-            return
-        }
-
-        horzFFTPipeline = try MetalView.shared.device.makeComputePipelineState(function: horzFunction)
-
-        guard let inverseHorzFunction = library?.makeFunction(name: "inverseHorzFFTStage") else {
-            return
-        }
-        
-        inverseHorzFFTPipeline = try MetalView.shared.device.makeComputePipelineState(function: inverseHorzFunction)
-
-        guard let inverseFFTDivide = library?.makeFunction(name: "inverseFFTDivide") else {
-            return
-        }
-        
-        inverseFFTDividePipeline = try MetalView.shared.device.makeComputePipelineState(function: inverseFFTDivide)
     }
     
     func run(computeEncoder: MTLComputeCommandEncoder) {
@@ -65,58 +33,9 @@ class TestFFT {
         }
         catch {}
         
-        // Perform horizontal FFT
-        computeEncoder.setComputePipelineState(horzFFTPipeline!)
+        let pingpong = fft.horizontalFFT(computeEncoder: computeEncoder, data: testTexture, startingBuffer: 0)
         
-        computeEncoder.setTexture(butterflyTexture, index: 2)
-        
-        let stages = Int(log2(Float(N)))
-        
-        let threadsPerGrid = MTLSizeMake(N, 1, 1)
-
-        let width = horzFFTPipeline!.threadExecutionWidth
-        let height = horzFFTPipeline!.maxTotalThreadsPerThreadgroup / width
-        
-        let threadsPerGroup = MTLSizeMake(width, height, 1)
-
-        var pingpong = 0
-        
-        for stage in 0..<stages {
-            computeEncoder.setTexture(testTexture[pingpong], index: 0)
-            computeEncoder.setTexture(testTexture[pingpong ^ 1], index: 1)
-            
-            var s: Int = stage
-            computeEncoder.setBytes(&s, length: MemoryLayout<Int>.size, index: 0)
-            computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
-            
-            pingpong ^= 1
-        }
-
-        // Perform horizontal inverse FFT
-        computeEncoder.setComputePipelineState(inverseHorzFFTPipeline!)
-        
-        computeEncoder.setTexture(inverseButterflyTexture, index: 2)
-        
-        for stage in 0..<stages {
-            computeEncoder.setTexture(testTexture[pingpong], index: 0)
-            computeEncoder.setTexture(testTexture[pingpong ^ 1], index: 1)
-            
-            var s: InverseFFTParams = InverseFFTParams(stage: Int32(stage), lastStage: Int32(stages - 1))
-            
-            computeEncoder.setBytes(&s, length: MemoryLayout<InverseFFTParams>.size, index: 0)
-            computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
-            
-            pingpong ^= 1
-        }
-        
-        computeEncoder.setComputePipelineState(inverseFFTDividePipeline!)
-
-        var multiplier = 1.0 / Float(N)
-
-        computeEncoder.setBytes(&multiplier, length: MemoryLayout<Float>.size, index: 0)
-        computeEncoder.setTexture(testTexture[pingpong], index: 0)
-
-        computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
+        _ = fft.inverseHorizontalFFT(computeEncoder: computeEncoder, data: testTexture, startingBuffer: pingpong)
     }
     
     func makeTexture() throws -> MTLTexture {

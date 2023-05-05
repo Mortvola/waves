@@ -35,26 +35,24 @@ class Renderer {
     private var h0ktTexture: [MTLTexture] = []
     private var pingpong = 0
 
-    private var testTexture: [MTLTexture] = []
-
     private var updatePipeline: MTLComputePipelineState? = nil
 
-    private var params: MTLBuffer? = nil
+//    private var params: MTLBuffer? = nil
     private var frameConstants: MTLBuffer? = nil
     
     private var inputTexture: InputTexture? = nil
-    
-    private var butterflyTexture: MTLTexture? = nil
-    private var inverseHorzFFTPipeline: MTLComputePipelineState? = nil
-    private var inverseVertFFTPipeline: MTLComputePipelineState? = nil
-    private var inverseFFTDividePipeline: MTLComputePipelineState? = nil
     
     private var wave: MTKMesh? = nil
     
     private var camera: Camera = Camera()
     
-    private var test: TestFFT? = nil
-    private var tested = false
+//    private var test: TestFFT? = nil
+//    private var tested = false
+    
+    private var fft: Fourier? = nil
+    
+    private var useNaivePipeline = true
+    private var naivePipeline: MTLComputePipelineState? = nil
     
     func initialize() throws {
         do {
@@ -63,6 +61,8 @@ class Renderer {
             }
             
             self.commandQueue = queue
+            
+            self.fft = try Fourier(M: N, N: N, commandQueue: commandQueue!)
             
 //            self.pipelineState = try makePipeline()
             self.wavePipelineState = try makeWavePipeline()
@@ -88,13 +88,9 @@ class Renderer {
             
             updatePipeline = try MetalView.shared.device.makeComputePipelineState(function: function)
             
-            params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Float>.size)!
+//            params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Float>.size)!
             
             self.rectangle3 = Rectangle(texture: h0ktTexture[0], size: Float(N), offset: simd_float2(-Float(N), -Float(N)));
-            
-            self.butterflyTexture = try makeButterflyTexture(N: N, inverse: true, commandQueue: commandQueue!)
-            
-            makeInverseFFTPipelines()
             
             wave = try allocatePlane(dimensions: simd_float2(Float(N * 2), Float(N * 2)), segments: simd_uint2(UInt32(N - 1), UInt32(N - 1)))
             
@@ -105,7 +101,9 @@ class Renderer {
             
             camera.updateLookAt(yawChange: 0, pitchChange: 25)
             
-            test = try TestFFT(N: 8, commandQueue: commandQueue!)
+//            test = try TestFFT(N: 8, commandQueue: commandQueue!)
+            
+            makeNaivePipeline(commandQueue: commandQueue!, windDirection: Settings.shared.windspeed, windSpeed: Settings.shared.windspeed)
         }
         catch{
             print(error)
@@ -113,28 +111,16 @@ class Renderer {
         }
     }
 
-    func makeInverseFFTPipelines() {
+    func makeNaivePipeline(commandQueue: MTLCommandQueue, windDirection: Float, windSpeed: Float) {
         let library = MetalView.shared.device.makeDefaultLibrary()
 
-        guard let horzFunction = library?.makeFunction(name: "inverseHorzFFTStage") else {
+        guard let function = library?.makeFunction(name: "naiveHeightCompute") else {
             return
         }
-        
-        guard let vertFunction = library?.makeFunction(name: "inverseVertFFTStage") else {
-            return
-        }
-
-        inverseHorzFFTPipeline = try? MetalView.shared.device.makeComputePipelineState(function: horzFunction)
-        
-        inverseVertFFTPipeline = try? MetalView.shared.device.makeComputePipelineState(function: vertFunction)
-        
-        guard let inverseFFTDivide = library?.makeFunction(name: "inverseFFTDivide") else {
-            return
-        }
-        
-        inverseFFTDividePipeline = try? MetalView.shared.device.makeComputePipelineState(function: inverseFFTDivide)
+                
+        naivePipeline = try? MetalView.shared.device.makeComputePipelineState(function: function)
     }
-
+        
     func buildVertexDescriptor() -> MTLVertexDescriptor {
         let mtlVertexDescriptor = MTLVertexDescriptor()
         
@@ -239,83 +225,81 @@ class Renderer {
     }
     
     func updateTexture(commandQueue: MTLCommandQueue) {
-        guard
-            let inverseHorzFFTPipeline = inverseHorzFFTPipeline,
-            let inverseVertFFTPipeline = inverseVertFFTPipeline
-        else {
-            return
-        }
-
-        if inverseFFTDividePipeline == nil {
+        guard let updatePipeline = updatePipeline else {
             return
         }
         
-        if Settings.shared.windspeed != inputTexture?.windspeed ||
-            Settings.shared.windDirection != inputTexture?.windDirection {
-            inputTexture?.makeTexture(commandQueue: commandQueue, windDirection: Settings.shared.windDirection, windSpeed: Settings.shared.windspeed)
-        }
+//        if Settings.shared.windspeed != inputTexture?.windspeed ||
+//            Settings.shared.windDirection != inputTexture?.windDirection {
+//            inputTexture?.makeTexture(commandQueue: commandQueue, windDirection: Settings.shared.windDirection, windSpeed: Settings.shared.windspeed)
+//        }
 
         if let commandBuffer = commandQueue.makeCommandBuffer() {
             if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
-//                test?.run(computeEncoder: computeEncoder)
+                if let naivePipeline = naivePipeline, useNaivePipeline {
+                    if Settings.shared.step {
+                        computeEncoder.setComputePipelineState(naivePipeline)
+                        
+                        let p1 = inputTexture!.params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
+                        p1[0].windDirection = simd_float2(cos(Settings.shared.windDirection / 180 * Float.pi), sin(Settings.shared.windDirection / 360 * Float.pi))
+                        p1[0].windSpeed = Settings.shared.windspeed
+                        p1[0].L = Settings.shared.L
+                        p1[0].A = Settings.shared.A
+                        p1[0].l = Settings.shared.l
+                        
+                        computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
+                        
+//                        let time = params!.contents().bindMemory(to: Float.self, capacity: MemoryLayout<Float>.size)
+//                        //                    p[0] = Float(getTime())
+//                        time[0] = Settings.shared.time
+//
+//                        computeEncoder.setBuffer(params, offset: 0, index: 1)
+                        computeEncoder.setBytes(&Settings.shared.time, length: MemoryLayout<Float>.size, index: 1)
+                        
+//                        computeEncoder.setTexture(inputTexture?.noiseTexture1, index: 0)
+//                        computeEncoder.setTexture(inputTexture?.noiseTexture2, index: 1)
+//                        computeEncoder.setTexture(inputTexture?.noiseTexture3, index: 2)
+//                        computeEncoder.setTexture(inputTexture?.noiseTexture4, index: 3)
+                        computeEncoder.setTexture(inputTexture?.h0ktexture, index: 3)
+                        
+                        computeEncoder.setTexture(h0ktTexture[pingpong], index: 4)
+                        
+                        let threadsPerGrid = MTLSizeMake(N, N, 1)
+                        
+                        let width = updatePipeline.threadExecutionWidth
+                        let height = updatePipeline.maxTotalThreadsPerThreadgroup / width
+                        
+                        let threadsPerGroup = MTLSizeMake(width, height, 1)
+                        
+                        computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
+                        
+                        Settings.shared.step = false
+                    }
+                }
+                else {
+                    computeEncoder.setComputePipelineState(updatePipeline)
+                    
+//                    let p = params!.contents().bindMemory(to: Float.self, capacity: MemoryLayout<Float>.size)
+//                    p[0] = Float(getTime())
+//                    computeEncoder.setBuffer(params, offset: 0, index: 0)
+                    computeEncoder.setBytes(&Settings.shared.time, length: MemoryLayout<Float>.size, index: 0)
 
-                computeEncoder.setComputePipelineState(updatePipeline!)
-                
-                let p = params!.contents().bindMemory(to: Float.self, capacity: MemoryLayout<Float>.size)
-                p[0] = Float(getTime())
-                
-                computeEncoder.setBuffer(params, offset: 0, index: 0)
-                computeEncoder.setTexture(inputTexture?.h0ktexture, index: 0)
-                computeEncoder.setTexture(h0ktTexture[0], index: 1)
-                
-                let threadsPerGrid = MTLSizeMake(N, N, 1)
-                
-                let width = updatePipeline!.threadExecutionWidth
-                let height = updatePipeline!.maxTotalThreadsPerThreadgroup / width
-                
-                let threadsPerGroup = MTLSizeMake(width, height, 1)
-                
-                computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
-                
-                // Perform horizontal inverse FFT
-                computeEncoder.setComputePipelineState(inverseHorzFFTPipeline)
-
-                computeEncoder.setTexture(butterflyTexture, index: 2)
-
-                let stages = Int(log2(Float(N)))
-                                
-                for stage in 0..<stages {
-                    computeEncoder.setTexture(h0ktTexture[pingpong], index: 0)
-                    computeEncoder.setTexture(h0ktTexture[pingpong ^ 1], index: 1)
-
-                    var s: InverseFFTParams = InverseFFTParams(stage: Int32(stage), lastStage: Int32(stages - 1))
-
-                    computeEncoder.setBytes(&s, length: MemoryLayout<InverseFFTParams>.size, index: 0)
+                    computeEncoder.setTexture(inputTexture?.h0ktexture, index: 0)
+                    computeEncoder.setTexture(h0ktTexture[0], index: 1)
+                    
+                    let threadsPerGrid = MTLSizeMake(N, N, 1)
+                    
+                    let width = updatePipeline.threadExecutionWidth
+                    let height = updatePipeline.maxTotalThreadsPerThreadgroup / width
+                    
+                    let threadsPerGroup = MTLSizeMake(width, height, 1)
+                    
                     computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
                     
-                    pingpong ^= 1
+                    // Perform inverse FFT
+                    pingpong = fft!.inverseHorizontalFFT(computeEncoder: computeEncoder, data: h0ktTexture, startingBuffer: 0)
+                    pingpong = fft!.inverseVerticalFFT(computeEncoder: computeEncoder, data: h0ktTexture, startingBuffer: pingpong)
                 }
-
-                inverseFFTDivide(computeEncoder: computeEncoder)
-
-                // Perform horizontal inverse FFT
-                computeEncoder.setComputePipelineState(inverseVertFFTPipeline)
-
-                computeEncoder.setTexture(butterflyTexture, index: 2)
-
-                for stage in 0..<stages {
-                    computeEncoder.setTexture(h0ktTexture[pingpong], index: 0)
-                    computeEncoder.setTexture(h0ktTexture[pingpong ^ 1], index: 1)
-
-                    var s: InverseFFTParams = InverseFFTParams(stage: Int32(stage), lastStage: Int32(stages - 1))
-
-                    computeEncoder.setBytes(&s, length: MemoryLayout<InverseFFTParams>.size, index: 0)
-                    computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
-                    
-                    pingpong ^= 1
-                }
-
-                inverseFFTDivide(computeEncoder: computeEncoder)
                 
                 computeEncoder.endEncoding()
                 
@@ -324,24 +308,6 @@ class Renderer {
         }
     }
     
-    func inverseFFTDivide(computeEncoder: MTLComputeCommandEncoder) {
-        computeEncoder.setComputePipelineState(inverseFFTDividePipeline!)
-
-        let threadsPerGrid = MTLSizeMake(N, N, 1)
-        
-        let width = inverseFFTDividePipeline!.threadExecutionWidth
-        let height = inverseFFTDividePipeline!.maxTotalThreadsPerThreadgroup / width
-        
-        let threadsPerGroup = MTLSizeMake(width, height, 1)
-
-        var multiplier = 1.0 / Float(N)
-
-        computeEncoder.setBytes(&multiplier, length: MemoryLayout<Float>.size, index: 0)
-        computeEncoder.setTexture(h0ktTexture[pingpong], index: 0)
-
-        computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
-    }
-
     func updateFrameConstants() {
         let constants = UnsafeMutableRawPointer(frameConstants!.contents()).bindMemory(to: FrameConstants.self, capacity: 1)
 
@@ -378,15 +344,15 @@ class Renderer {
         if let commandBuffer = commandQueue.makeCommandBuffer() {
             commandBuffer.label = "\(self.tripleBufferIndex)"
             
-            if !tested {
-                if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
-                    test?.run(computeEncoder: computeEncoder)
-                    
-                    computeEncoder.endEncoding()
-                    
-//                    tested = true
-                }
-            }
+//            if !tested {
+//                if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
+//                    test?.run(computeEncoder: computeEncoder)
+//
+//                    computeEncoder.endEncoding()
+//
+////                    tested = true
+//                }
+//            }
             
             if let renderPassDescriptor = view.currentRenderPassDescriptor {
                 if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
@@ -397,7 +363,7 @@ class Renderer {
 //                    rectangle1.draw(renderEncoder: renderEncoder, sampler: sampler!)
 //                    rectangle2.draw(renderEncoder: renderEncoder, sampler: sampler!)
 //                    rectangle3.draw(renderEncoder: renderEncoder, sampler: sampler!)
-
+                    
                     renderEncoder.setRenderPipelineState(wavePipelineState)
                     
                     renderEncoder.setCullMode(.back)
@@ -408,7 +374,7 @@ class Renderer {
                         renderEncoder.setTriangleFillMode(.lines)
                     }
                     
-                    renderEncoder.setVertexTexture(h0ktTexture[pingpong ^ 1], index: 3)
+                    renderEncoder.setVertexTexture(h0ktTexture[pingpong], index: 3)
 
                     // Pass the vertex and index information to the vertex shader
                     for (i, buffer) in wave!.vertexBuffers.enumerated() {
@@ -435,19 +401,6 @@ class Renderer {
             commandBuffer.commit()
         }
     }
-
-//    func updateViewDimensions() {
-//        /// Respond to drawable size or orientation changes here
-//        let width = MetalView.shared.width
-//        let height = MetalView.shared.height
-//
-//        if width != 0 && height != 0 {
-//            let fovy: Float = degreesToRadians(45.0)
-//            let aspect = Float(height) / Float(width)
-//
-//            self.projectionMatrix = Matrix4x4.perspectiveLeftHand(fovyRadians: fovy, aspect: aspect, nearZ: nearZ, farZ: farZ)
-//        }
-//    }
 
     public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         MetalView.shared.width = Float(size.width)

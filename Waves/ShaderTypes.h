@@ -36,6 +36,9 @@ struct FrameConstants {
 struct Params {
     vector_float2 windDirection;
     float windSpeed;
+    int L;
+    float A;
+    float l;
 };
 
 struct InverseFFTParams {

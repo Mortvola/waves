@@ -32,16 +32,55 @@ struct ContentView: View {
                 }
                 HStack {
                     Stepper {
-                        Text("Wind Speed: \(String(format: "%.0f", settings.windDirection))")
+                        Text("Wind Direction: \(String(format: "%.0f", settings.windDirection))")
                     } onIncrement: {
                         settings.windDirection += 1
                         if settings.windDirection == 360 {
                             settings.windDirection = 0
                         }
+                        settings.step = true
                     } onDecrement: {
                         settings.windDirection -= 1
                         if settings.windDirection == -1 {
                             settings.windDirection = 359
+                        }
+                        settings.step = true
+                    }
+                        .foregroundColor(.white)
+                        .accentColor(.white)
+                        .padding(.leading)
+                        .frame(maxWidth: 300)
+                    Spacer()
+                }
+                HStack {
+                    Stepper {
+                        Text("L: \(settings.L)")
+                    } onIncrement: {
+                        settings.L += 1
+                        settings.step = true
+                    } onDecrement: {
+                        if settings.L > 1 {
+                            settings.L -= 1
+                            settings.step = true
+                        }
+                    }
+                        .foregroundColor(.white)
+                        .accentColor(.white)
+                        .padding(.leading)
+                        .frame(maxWidth: 300)
+                    Spacer()
+                }
+                HStack {
+                    Stepper {
+                        Text("Time: \(String(format: "%.3f", settings.time))")
+                    } onIncrement: {
+                        settings.time += 0.033
+                        settings.step = true
+                    } onDecrement: {
+                        if settings.time > 0 {
+                            settings.time -= 0.033
+                            settings.time = max(settings.time, 0)
+                            settings.step = true
                         }
                     }
                         .foregroundColor(.white)

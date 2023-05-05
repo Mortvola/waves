@@ -12,14 +12,14 @@ import GameplayKit
 class InputTexture {
     let N: Int
     
-    var windspeed: Float
-    var windDirection: Float
+//    var windspeed: Float
+//    var windDirection: Float
     
-    private var noiseTexture1: MTLTexture
-    private var noiseTexture2: MTLTexture
-    private var noiseTexture3: MTLTexture
-    private var noiseTexture4: MTLTexture
-    private var params: MTLBuffer
+    public var noiseTexture1: MTLTexture
+    public var noiseTexture2: MTLTexture
+    public var noiseTexture3: MTLTexture
+    public var noiseTexture4: MTLTexture
+    public var params: MTLBuffer
     
     var h0ktexture: MTLTexture? = nil
 
@@ -32,14 +32,14 @@ class InputTexture {
 
         self.params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Params>.size)!
         
-        self.windspeed = windSpeed
-        self.windDirection = windDirection
+//        self.windspeed = windSpeed
+//        self.windDirection = windDirection
         
-        makeTexture(commandQueue: commandQueue, windDirection: windDirection, windSpeed: windSpeed)
+        makeTexture(commandQueue: commandQueue)
     }
     
     class func makeNoiseTexture(N: Int) throws -> MTLTexture {
-        let seed = Date().timeIntervalSince1970
+        let seed = 0; // Date().timeIntervalSince1970
         
         let noise = GKGaussianDistribution(randomSource: GKARC4RandomSource(seed: "\(seed)".data(using: .utf8)!), mean: 0, deviation: 1)
 
@@ -64,7 +64,7 @@ class InputTexture {
         return texture;
     }
     
-    func makeTexture(commandQueue: MTLCommandQueue, windDirection: Float, windSpeed: Float) {
+    func makeTexture(commandQueue: MTLCommandQueue) {
         let library = MetalView.shared.device.makeDefaultLibrary()
 
         guard let function = library?.makeFunction(name: "makeInputTexture") else {
@@ -84,9 +84,12 @@ class InputTexture {
                     computeEncoder.setComputePipelineState(pipeline)
                     
                     let p = params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
-                    p[0].windDirection = simd_float2(cos(windDirection / 180 * Float.pi), sin(windDirection / 360 * Float.pi))
-                    p[0].windSpeed = windSpeed
-                    
+                    p[0].windDirection = simd_float2(cos(Settings.shared.windDirection / 180 * Float.pi), sin(Settings.shared.windDirection / 360 * Float.pi))
+                    p[0].windSpeed = Settings.shared.windspeed
+                    p[0].L = Settings.shared.L
+                    p[0].A = Settings.shared.A
+                    p[0].l = Settings.shared.l
+
                     computeEncoder.setBuffer(params, offset: 0, index: 0)
                     computeEncoder.setTexture(noiseTexture1, index: 0)
                     computeEncoder.setTexture(noiseTexture2, index: 1)
@@ -109,8 +112,8 @@ class InputTexture {
                 }
             }
         }
-        
-        self.windspeed = windSpeed
-        self.windDirection = windDirection
+//
+//        self.windspeed = windSpeed
+//        self.windDirection = windDirection
     }
 }
