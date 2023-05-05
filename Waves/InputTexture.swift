@@ -25,10 +25,10 @@ class InputTexture {
 
     init(commandQueue: MTLCommandQueue, N: Int, windDirection: Float, windSpeed: Float) throws {
         self.N = N
-        self.noiseTexture1 = try InputTexture.makeNoiseTexture(N: N)
-        self.noiseTexture2 = try InputTexture.makeNoiseTexture(N: N)
-        self.noiseTexture3 = try InputTexture.makeNoiseTexture(N: N)
-        self.noiseTexture4 = try InputTexture.makeNoiseTexture(N: N)
+        self.noiseTexture1 = try InputTexture.makeNoiseTexture(N: N, seed: 0)
+        self.noiseTexture2 = try InputTexture.makeNoiseTexture(N: N, seed: 1)
+        self.noiseTexture3 = try InputTexture.makeNoiseTexture(N: N, seed: 2)
+        self.noiseTexture4 = try InputTexture.makeNoiseTexture(N: N, seed: 3)
 
         self.params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Params>.size)!
         
@@ -38,8 +38,8 @@ class InputTexture {
         makeTexture(commandQueue: commandQueue)
     }
     
-    class func makeNoiseTexture(N: Int) throws -> MTLTexture {
-        let seed = 0; // Date().timeIntervalSince1970
+    class func makeNoiseTexture(N: Int, seed: Int) throws -> MTLTexture {
+        // let seed = 0; // Date().timeIntervalSince1970
         
         let noise = GKGaussianDistribution(randomSource: GKARC4RandomSource(seed: "\(seed)".data(using: .utf8)!), mean: 0, deviation: 1)
 
