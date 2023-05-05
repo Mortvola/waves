@@ -92,10 +92,10 @@ kernel void makeInputTexture(
     float g = 9.8; // meters per second^2
     float L2 = (params.windSpeed * params.windSpeed) / g; // (m^2 / s) * (s^2 / m) --> meter seconds
     
-    float m = tpig.x - N / 2;
-    float n = tpig.y - N / 2;
+    float m = tpig.x; // - N / 2;
+    float n = tpig.y; // - N / 2;
                      
-    float2 k = float2(2 * M_PI_F * m / L, 2 * M_PI_F * n / L);
+    float2 k = float2(M_PI_F * (2 * m - N) / L, M_PI_F * (2 * n - N) / L);
     float kLength = length(k);
     
     float2 h0k1 = float2(0, 0);
@@ -167,10 +167,6 @@ kernel void makeTimeTexture(
 kernel void naiveHeightCompute(
                                const device Params &params [[ buffer(0) ]],
                                const device float &t [[ buffer(1) ]],
-//                               texture2d<float, access::read> noise1 [[ texture(0) ]],
-//                               texture2d<float, access::read> noise2 [[ texture(1) ]],
-//                               texture2d<float, access::read> noise3 [[ texture(2) ]],
-//                               texture2d<float, access::read> noise4 [[ texture(3) ]],
                                texture2d<float, access::read> hk0texture [[ texture(3) ]],
                                texture2d<float, access::write> output [[ texture(4) ]],
                                uint2 tpig [[ thread_position_in_grid ]]
@@ -181,24 +177,21 @@ kernel void naiveHeightCompute(
     float g = 9.8; // meters per second^2
     
     float2 height = float2(0, 0);
-    
-    for (int n = -int(N)/2; n < int(N)/2; ++n) {
+
+    for (int n = 0; n < N; ++n) {
         
         float2 innerHeight = float2(0, 0);
         
-        float z = (tpig.y - N / 2) * (L / N);
-        float kz = 2 * M_PI_F * n / L;
+        float kz = M_PI_F * (2 * n - N) / L;
         
-        for (int m = -int(N)/2; m < int(N)/2; ++m) {
+        for (int m = 0; m < N; ++m) {
 
-            float x = (tpig.x - N / 2) * (L / N);
-            float kx = 2 * M_PI_F * m / L;
+            float kx = M_PI_F * (2 * m - N) / L;
             
             float2 k = float2(kx, kz);
             float kLength = length(k);
 
-            float4 h0k = hk0texture.read(ushort2(m + int(N)/2, n + int(N)/2)).r;
-//            float4 h0k = hk0texture.read(ushort2(0, 0)).r;
+            float4 h0k = hk0texture.read(ushort2(m, n)).r;
 
             float omegat = sqrt(g * kLength) * t;
             
@@ -207,11 +200,22 @@ kernel void naiveHeightCompute(
                         
             float2 v = ComplexMultiply(h0k.rg, exponent) + ComplexMultiply(float2(h0k.b, -h0k.a), float2(exponent.x, -exponent.y));
 
-            innerHeight += ComplexMultiply(v, float2(cos(k.x * x), sin(k.x * x)));;
+            float v2 = 2 * M_PI_F * m * tpig.x / N;
+            
+            v = ComplexMultiply(v, float2(cos(v2), sin(v2)));
+            
+            innerHeight += v;
         }
         
-        height += ComplexMultiply(innerHeight, float2(cos(kz * z), sin(kz * z)));
+        float v4 = 2 * M_PI_F * n * tpig.y / N;
+
+        float2 v3 = ComplexMultiply(innerHeight, float2(cos(v4), sin(v4)));
+        
+        height += v3;
     }
     
+    height = ComplexMultiply(height, float2(cos(-M_PI_F * tpig.y), sin(-M_PI_F * tpig.y)));
+    height = ComplexMultiply(height, float2(cos(-M_PI_F * tpig.x), sin(-M_PI_F * tpig.x)));
+
     output.write(float4(height.x, height.y, 0, 1), ushort2(tpig.x, tpig.y));
 }
