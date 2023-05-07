@@ -39,8 +39,6 @@ class InputTexture {
     }
     
     class func makeNoiseTexture(N: Int, seed: Int) throws -> MTLTexture {
-        // let seed = 0; // Date().timeIntervalSince1970
-        
         let noise = GKGaussianDistribution(randomSource: GKARC4RandomSource(seed: "\(seed)".data(using: .utf8)!), mean: 0, deviation: 1)
 
         guard let buffer = MetalView.shared.device.makeBuffer(length: N * N * MemoryLayout<Float>.size, options: .storageModeShared) else {
