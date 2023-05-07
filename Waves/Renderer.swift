@@ -256,11 +256,11 @@ class Renderer {
 //                        computeEncoder.setBuffer(params, offset: 0, index: 1)
                         computeEncoder.setBytes(&Settings.shared.time, length: MemoryLayout<Float>.size, index: 1)
                         
-//                        computeEncoder.setTexture(inputTexture?.noiseTexture1, index: 0)
-//                        computeEncoder.setTexture(inputTexture?.noiseTexture2, index: 1)
-//                        computeEncoder.setTexture(inputTexture?.noiseTexture3, index: 2)
-//                        computeEncoder.setTexture(inputTexture?.noiseTexture4, index: 3)
-                        computeEncoder.setTexture(inputTexture?.h0ktexture, index: 3)
+                        computeEncoder.setTexture(inputTexture?.noiseTexture1, index: 0)
+                        computeEncoder.setTexture(inputTexture?.noiseTexture2, index: 1)
+                        computeEncoder.setTexture(inputTexture?.noiseTexture3, index: 2)
+                        computeEncoder.setTexture(inputTexture?.noiseTexture4, index: 3)
+//                        computeEncoder.setTexture(inputTexture?.h0ktexture, index: 3)
                         
                         computeEncoder.setTexture(h0ktTexture[pingpong], index: 4)
                         
@@ -279,10 +279,16 @@ class Renderer {
                 else {
                     computeEncoder.setComputePipelineState(updatePipeline)
                     
-//                    let p = params!.contents().bindMemory(to: Float.self, capacity: MemoryLayout<Float>.size)
-//                    p[0] = Float(getTime())
-//                    computeEncoder.setBuffer(params, offset: 0, index: 0)
-                    computeEncoder.setBytes(&Settings.shared.time, length: MemoryLayout<Float>.size, index: 0)
+                    let p1 = inputTexture!.params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
+                    p1[0].windDirection = simd_float2(cos(Settings.shared.windDirection / 180 * Float.pi), sin(Settings.shared.windDirection / 360 * Float.pi))
+                    p1[0].windSpeed = Settings.shared.windspeed
+                    p1[0].L = Settings.shared.L
+                    p1[0].A = Settings.shared.A
+                    p1[0].l = Settings.shared.l
+                    
+                    computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
+
+                    computeEncoder.setBytes(&Settings.shared.time, length: MemoryLayout<Float>.size, index: 1)
 
                     computeEncoder.setTexture(inputTexture?.h0ktexture, index: 0)
                     computeEncoder.setTexture(h0ktTexture[0], index: 1)

@@ -57,10 +57,10 @@ kernel void makeButterflyTexture(
     
     int groupButterflyIndex = tpig.x % (lanesPerGroup / 2);
     
-    float theta = -2 * M_PI_F / lanesPerGroup;
+    float theta = (2 * M_PI_F * groupButterflyIndex) / lanesPerGroup;
     
     // de Moivre's formula: (cos(theta) + i sin(theta))^n = cos(n * theta) + i sin(n * theta)
-    float2 w = float2(cos(theta * groupButterflyIndex), sin(theta * groupButterflyIndex));
+    float2 w = float2(cos(theta), sin(theta));
     w *= sign;
     
     output.write(float4(w.x, w.y, index1, index2), tpig);
@@ -97,16 +97,16 @@ kernel void inverseHorzFFTStage(
     float4 v1 = input.read(uint2(lookup.b, tpig.y));
     float4 v2 = input.read(uint2(lookup.a, tpig.y));
     
-    if (params.stage == 0) {
-        v1 = float4(v1.r, -v1.g, 0, 1);
-        v2 = float4(v2.r, -v2.g, 0, 1);
-    }
+//    if (params.stage == 0) {
+//        v1 = float4(v1.r, -v1.g, 0, 1);
+//        v2 = float4(v2.r, -v2.g, 0, 1);
+//    }
     
     float2 c1 = v1.rg + ComplexMultiply(lookup.rg, v2.rg);
 
-    if (params.stage == params.lastStage) {
-        c1 = float2(c1.r, -c1.g);
-    }
+//    if (params.stage == params.lastStage) {
+//        c1 = float2(c1.r, -c1.g);
+//    }
 
     output.write(float4(c1.r, c1.g, 0, 1), tpig);
 }
@@ -124,16 +124,16 @@ kernel void inverseVertFFTStage(
     float4 v1 = input.read(uint2(tpig.x, lookup.b));
     float4 v2 = input.read(uint2(tpig.x, lookup.a));
 
-    if (params.stage == 0) {
-        v1 = float4(v1.r, -v1.g, 0, 1);
-        v2 = float4(v2.r, -v2.g, 0, 1);
-    }
+//    if (params.stage == 0) {
+//        v1 = float4(v1.r, -v1.g, 0, 1);
+//        v2 = float4(v2.r, -v2.g, 0, 1);
+//    }
 
     float2 c1 = v1.rg + ComplexMultiply(lookup.rg, v2.rg);
 
-    if (params.stage == params.lastStage) {
-        c1 = float2(c1.r, -c1.g);
-    }
+//    if (params.stage == params.lastStage) {
+//        c1 = float2(c1.r, -c1.g);
+//    }
 
     output.write(float4(c1.x, c1.y, 0, 1), tpig);
 }
@@ -144,9 +144,13 @@ kernel void inverseFFTDivide(
                              uint2 tpig [[ thread_position_in_grid ]]
                              )
 {
-    float4 value = input.read(tpig);
+    float4 height = input.read(tpig);
     
-    float2 result = ComplexMultiply(value.rg, float2(multiplier, 0));
+    if ((tpig.y & 1) ^ (tpig.x & 1)) {
+        height = -height;
+    }
+
+//    float2 result = ComplexMultiply(value.rg, float2(multiplier, 0));
     
-    input.write(float4(result, 0, 1), tpig);
+    input.write(float4(height.rg, 0, 1), tpig);
 }

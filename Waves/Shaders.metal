@@ -92,10 +92,19 @@ kernel void makeInputTexture(
     float g = 9.8; // meters per second^2
     float L2 = (params.windSpeed * params.windSpeed) / g; // (m^2 / s) * (s^2 / m) --> meter seconds
     
-    float m = tpig.x; // - N / 2;
-    float n = tpig.y; // - N / 2;
+    uint m = tpig.x; // - N / 2;
+    uint n = tpig.y; // - N / 2;
                      
     float2 k = float2(M_PI_F * (2 * m - N) / L, M_PI_F * (2 * n - N) / L);
+    
+    if ((m & 1) == 1) {
+        k.x = M_PI_F * (2 * m + 1 - N) / L;
+    }
+    
+    if ((n & 1) == 1) {
+        k.y = M_PI_F * (2 * n + 1 - N) / L;
+    }
+    
     float kLength = length(k);
     
     float2 h0k1 = float2(0, 0);
@@ -137,7 +146,8 @@ kernel void makeInputTexture(
 }
 
 kernel void makeTimeTexture(
-                            const device float &t [[ buffer(0) ]],
+                            const device Params &params [[ buffer(0) ]],
+                            const device float &t [[ buffer(1) ]],
                             texture2d<float, access::read> input [[ texture(0) ]],
                             texture2d<float, access::write> output [[ texture(1) ]],
                             uint2 tpig [[ thread_position_in_grid ]]
@@ -145,77 +155,227 @@ kernel void makeTimeTexture(
 {
     float4 h0k = input.read(ushort2(tpig.x, tpig.y));
     
-    float L = 1000;
+    float L = params.L;
     float N = input.get_width();
 
-    float n = tpig.x - N / 2;
-    float m = tpig.y - N / 2;
+    uint n = tpig.x; //  - N / 2;
+    uint m = tpig.y; //  - N / 2;
 
     float g = 9.8; // meters per second^2
-    float2 k = float2((2.0 * M_PI_F * n) / L, (2.0 * M_PI_F * m) / L);
+    
+//    float kx = M_PI_F * (2 * m - N) / L;
+//    float kz = M_PI_F * (2 * n - N) / L;
 
-    float w = sqrt(g * length(k));
+    float kx = M_PI_F * (2 * m - N) / L;
+    float kz = M_PI_F * (2 * n - N) / L;
+
+    if ((m & 1) == 1) {
+        kx = M_PI_F * (2 * m + 1 - N) / L;
+    }
+
+    if ((n & 1) == 1) {
+        kz = M_PI_F * (2 * n + 1 - N) / L;
+    }
+
+    float2 k = float2(kx, kz);
+
+    float omegat = sqrt(g * length(k)) * t;
     
-    // Using euler's formula, e^ix == cos(x) + i * sin(x)...
-    float2 exponent = float2(cos(w * t), sin(w * t));
+    // Using euler's formula, e^ix == cos(x) + i * sin(x)   ...
+    float2 exponent = float2(cos(omegat), sin(omegat));
     
-    float2 v = ComplexMultiply(h0k.rg, exponent) + ComplexMultiply(h0k.ba, float2(exponent.x, -exponent.y));
-    
+    float2 v = ComplexMultiply(h0k.rg, exponent) + ComplexMultiply(float2(h0k.b, -h0k.a), float2(exponent.x, -exponent.y));
+
+//    float v2 = 2 * M_PI_F * m * tpig.x / N;
+//    float v2 = 2 * M_PI_F * m * tpig.x / N;
+//    v = ComplexMultiply(v, float2(cos(v2), sin(v2)));
+
     output.write(float4(v.x, v.y, 0, 1), ushort2(tpig.x, tpig.y));
 }
 
-kernel void naiveHeightCompute(
+float2 h2(
+         float2 k,
+         float t,
+         const device Params &params,
+         float2 noise1,
+         float2 noise2
+         )
+{
+    float g = 9.8; // meters per second^2
+    
+    float kLength = length(k);
+    
+    float2 h0k1 = float2(0, 0);
+    float2 h0k2 = float2(0, 0);
+    
+    if (kLength != 0) {
+        float L2 = (params.windSpeed * params.windSpeed) / g; // (m^2 / s) * (s^2 / m) --> meter seconds
+
+        float kdotw = dot(normalize(k), params.windDirection);
+        
+        float damping = params.l;
+        
+        float phk = (params.A
+            * exp(-1 / (kLength * kLength * L2 * L2))
+            / pow(kLength, 4))
+            * pow(kdotw, 2)
+            * exp(-kLength * kLength * L2 * L2 * damping * damping);
+        
+        h0k1 = sqrt(phk / 2.0) * noise1;
+        
+        kdotw = dot(normalize(k), -params.windDirection);
+        
+        phk = (params.A
+            * exp(-1 / (kLength * kLength * L2 * L2))
+            / pow(kLength, 4))
+            * pow(kdotw, 2)
+            * exp(-kLength * kLength * L2 * L2 * damping * damping);
+        
+        h0k2 = sqrt(phk / 2.0) * noise2;
+    }
+
+    float omegat = sqrt(g * length(k)) * t;
+    
+    // Using euler's formula, e^ix == cos(x) + i * sin(x)   ...
+    float2 exponent = float2(cos(omegat), sin(omegat));
+    
+    float2 v = ComplexMultiply(h0k1, exponent) + ComplexMultiply(float2(h0k2.x, -h0k2.y), float2(exponent.x, -exponent.y));
+
+    return v;
+}
+
+
+float2 h(float2 k, float t, const device Params &params, float2 noise1, float2 noise2) {
+    float g = 9.8; // meters per second^2
+
+    float kLength = length(k);
+
+    float2 h0k1 = float2(0, 0);
+    float2 h0k2 = float2(0, 0);
+
+    if (kLength != 0) {
+        float L2 = (params.windSpeed * params.windSpeed) / g; // (m^2 / s) * (s^2 / m) --> meter seconds
+
+        float kdotw = dot(normalize(k), params.windDirection);
+
+        float damping = params.l;
+        
+        float phk = (params.A
+            * exp(-1 / (kLength * kLength * L2 * L2))
+            / pow(kLength, 4))
+            * pow(kdotw, 2)
+            * exp(-kLength * kLength * damping * damping);
+
+        h0k1 = sqrt(phk / 2.0) * noise1;
+
+        kdotw = dot(normalize(k), -params.windDirection);
+
+        phk = (params.A
+            * exp(-1 / (kLength * kLength * L2 * L2))
+            / pow(kLength, 4))
+            * pow(kdotw, 2)
+            * exp(-kLength * kLength * damping * damping);
+
+        h0k2 = sqrt(phk / 2.0) * noise2;
+    }
+
+    float omegat = sqrt(g * kLength) * t;
+    
+    // Using euler's formula, e^ix == cos(x) + i * sin(x)...
+    float2 exponent = float2(cos(omegat), sin(omegat));
+                
+    float2 v = ComplexMultiply(h0k1, exponent) + ComplexMultiply(float2(h0k2.x, -h0k2.y), float2(exponent.x, -exponent.y));
+    
+    return v;
+}
+
+
+kernel void naiveHeightCompute2(
                                const device Params &params [[ buffer(0) ]],
                                const device float &t [[ buffer(1) ]],
-                               texture2d<float, access::read> hk0texture [[ texture(3) ]],
+                               texture2d<float, access::read> noise1 [[ texture(0) ]],
+                               texture2d<float, access::read> noise2 [[ texture(1) ]],
+                               texture2d<float, access::read> noise3 [[ texture(2) ]],
+                               texture2d<float, access::read> noise4 [[ texture(3) ]],
                                texture2d<float, access::write> output [[ texture(4) ]],
                                uint2 tpig [[ thread_position_in_grid ]]
                                )
 {
-    float N = output.get_width();
-    int L = params.L;
-    float g = 9.8; // meters per second^2
+    int N = output.get_width();
     
     float2 height = float2(0, 0);
 
-    for (int n = 0; n < N; ++n) {
-        
-        float2 innerHeight = float2(0, 0);
-        
-        float kz = M_PI_F * (2 * n - N) / L;
-        
-        for (int m = 0; m < N; ++m) {
+    int x = (int(tpig.x) - N / 2) * params.L / N;
+    int z = (int(tpig.y) - N / 2) * params.L / N;
 
-            float kx = M_PI_F * (2 * m - N) / L;
-            
-            float2 k = float2(kx, kz);
-            float kLength = length(k);
+    for (int n = -(N / 2); n < N / 2; ++n) {
+        for (int m = -(N / 2); m < N / 2; ++m) {
 
-            float4 h0k = hk0texture.read(ushort2(m, n)).r;
+            float n1 = noise1.read(uint2(m + (N / 2), n + (N / 2))).r;
+            float n2 = noise2.read(uint2(m + (N / 2), n + (N / 2))).r;
+            float n3 = noise3.read(uint2(m + (N / 2), n + (N / 2))).r;
+            float n4 = noise4.read(uint2(m + (N / 2), n + (N / 2))).r;
 
-            float omegat = sqrt(g * kLength) * t;
+            float2 noise1 = float2(n1, n2);
+            float2 noise2 = float2(n3, n4);
             
-            // Using euler's formula, e^ix == cos(x) + i * sin(x)...
-            float2 exponent = float2(cos(omegat), sin(omegat));
-                        
-            float2 v = ComplexMultiply(h0k.rg, exponent) + ComplexMultiply(float2(h0k.b, -h0k.a), float2(exponent.x, -exponent.y));
+            float2 k = float2((M_PI_F * 2 * m) / params.L, (M_PI_F * 2 * n) / params.L);
 
-            float v2 = 2 * M_PI_F * m * tpig.x / N;
-            
-            v = ComplexMultiply(v, float2(cos(v2), sin(v2)));
-            
-            innerHeight += v;
+            float2 v = h(k, t, params, noise1, noise2);
+
+            v = ComplexMultiply(v, float2(cos(k.x * x), sin(k.x * x)));
+            v = ComplexMultiply(v, float2(cos(k.y * z), sin(k.y * z)));
+
+            height += v;
         }
-        
-        float v4 = 2 * M_PI_F * n * tpig.y / N;
+    }
 
-        float2 v3 = ComplexMultiply(innerHeight, float2(cos(v4), sin(v4)));
+    output.write(float4(height.x, height.y, 0, 1), tpig);
+}
+
+
+
+kernel void naiveHeightCompute(
+                               const device Params &params [[ buffer(0) ]],
+                               const device float &t [[ buffer(1) ]],
+                               texture2d<float, access::read> noise1 [[ texture(0) ]],
+                               texture2d<float, access::read> noise2 [[ texture(1) ]],
+                               texture2d<float, access::read> noise3 [[ texture(2) ]],
+                               texture2d<float, access::read> noise4 [[ texture(3) ]],
+//                               texture2d<float, access::read> hk0texture [[ texture(3) ]],
+                               texture2d<float, access::write> output [[ texture(4) ]],
+                               uint2 tpig [[ thread_position_in_grid ]]
+                               )
+{
+    int N = output.get_width();
+    int L = params.L;
+    
+    float2 height = float2(0, 0);
+    
+    int x = (int(tpig.x) - N / 2) * L / N;
+    int z = (int(tpig.y) - N / 2) * L / N;
+    
+    for (int n = -(N / 2); n < (N / 2); ++n) {
         
-        height += v3;
+        for (int m = -(N / 2); m < (N / 2); ++m) {
+            float n1 = noise1.read(ushort2(m + (N/2), n + (N/2))).r;
+            float n2 = noise2.read(ushort2(m + (N/2), n + (N/2))).r;
+            float n3 = noise3.read(ushort2(m + (N/2), n + (N/2))).r;
+            float n4 = noise4.read(ushort2(m + (N/2), n + (N/2))).r;
+            
+            float2 noise1 = float2(n1, n2);
+            float2 noise2 = float2(n3, n4);
+            
+            float2 k = float2((M_PI_F * 2 * m) / L, (M_PI_F * 2 * n) / L);
+            
+            float2 v = h(k, t, params, noise1, noise2);
+            
+            v = ComplexMultiply(v, float2(cos(k.x * x), sin(k.x * x)));
+            v = ComplexMultiply(v, float2(cos(k.y * z), sin(k.y * z)));
+            
+            height += v;
+        }
     }
     
-    height = ComplexMultiply(height, float2(cos(-M_PI_F * tpig.y), sin(-M_PI_F * tpig.y)));
-    height = ComplexMultiply(height, float2(cos(-M_PI_F * tpig.x), sin(-M_PI_F * tpig.x)));
-
-    output.write(float4(height.x, height.y, 0, 1), ushort2(tpig.x, tpig.y));
+    output.write(float4(height.x, height.y, 0, 1), tpig);
 }

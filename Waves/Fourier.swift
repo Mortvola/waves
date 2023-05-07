@@ -125,7 +125,7 @@ class Fourier {
             pingpong ^= 1
         }
         
-        inverseFFTDivide(computeEncoder: computeEncoder, data: data[pingpong])
+//        inverseFFTDivide(computeEncoder: computeEncoder, data: data[pingpong])
         
         return pingpong
     }
