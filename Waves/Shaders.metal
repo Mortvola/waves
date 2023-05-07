@@ -291,47 +291,46 @@ float2 h(float2 k, float t, const device Params &params, float2 noise1, float2 n
 
 
 kernel void naiveHeightCompute2(
-                               const device Params &params [[ buffer(0) ]],
-                               const device float &t [[ buffer(1) ]],
-                               texture2d<float, access::read> noise1 [[ texture(0) ]],
-                               texture2d<float, access::read> noise2 [[ texture(1) ]],
-                               texture2d<float, access::read> noise3 [[ texture(2) ]],
-                               texture2d<float, access::read> noise4 [[ texture(3) ]],
-                               texture2d<float, access::write> output [[ texture(4) ]],
-                               uint2 tpig [[ thread_position_in_grid ]]
-                               )
-{
-    int N = output.get_width();
-    
-    float2 height = float2(0, 0);
-
-    int x = (int(tpig.x) - N / 2) * params.L / N;
-    int z = (int(tpig.y) - N / 2) * params.L / N;
-
-    for (int n = -(N / 2); n < N / 2; ++n) {
-        for (int m = -(N / 2); m < N / 2; ++m) {
-
-            float n1 = noise1.read(uint2(m + (N / 2), n + (N / 2))).r;
-            float n2 = noise2.read(uint2(m + (N / 2), n + (N / 2))).r;
-            float n3 = noise3.read(uint2(m + (N / 2), n + (N / 2))).r;
-            float n4 = noise4.read(uint2(m + (N / 2), n + (N / 2))).r;
-
-            float2 noise1 = float2(n1, n2);
-            float2 noise2 = float2(n3, n4);
-            
-            float2 k = float2((M_PI_F * 2 * m) / params.L, (M_PI_F * 2 * n) / params.L);
-
-            float2 v = h(k, t, params, noise1, noise2);
-
-            v = ComplexMultiply(v, float2(cos(k.x * x), sin(k.x * x)));
-            v = ComplexMultiply(v, float2(cos(k.y * z), sin(k.y * z)));
-
-            height += v;
-        }
-    }
-
-    output.write(float4(height.x, height.y, 0, 1), tpig);
-}
+                                const device Params &params [[ buffer(0) ]],
+                                const device float &t [[ buffer(1) ]],
+                                texture2d<float, access::read> noise1 [[ texture(0) ]],
+                                texture2d<float, access::read> noise2 [[ texture(1) ]],
+                                texture2d<float, access::read> noise3 [[ texture(2) ]],
+                                texture2d<float, access::read> noise4 [[ texture(3) ]],
+                                texture2d<float, access::write> output [[ texture(4) ]],
+                                uint2 tpig [[ thread_position_in_grid ]]
+                                )
+ {
+     int N = output.get_width();
+     
+     float2 height = float2(0, 0);
+     
+     int x = (int(tpig.x) - N / 2) * params.L / N;
+     int z = (int(tpig.y) - N / 2) * params.L / N;
+     
+     for (int n = -(N / 2); n < (N / 2); ++n) {
+         for (int m = -(N / 2); m < (N / 2); ++m) {
+             float n1 = noise1.read(uint2(m + (N/2), n + (N/2))).r;
+             float n2 = noise2.read(uint2(m + (N/2), n + (N/2))).r;
+             float n3 = noise3.read(uint2(m + (N/2), n + (N/2))).r;
+             float n4 = noise4.read(uint2(m + (N/2), n + (N/2))).r;
+             
+             float2 noise1 = float2(n1, n2);
+             float2 noise2 = float2(n3, n4);
+             
+             float2 k = float2((M_PI_F * 2 * m) / params.L, (M_PI_F * 2 * n) / params.L);
+             
+             float2 v = h(k, t, params, noise1, noise2);
+             
+             v = ComplexMultiply(v, float2(cos(k.x * x), sin(k.x * x)));
+             v = ComplexMultiply(v, float2(cos(k.y * z), sin(k.y * z)));
+             
+             height += v;
+         }
+     }
+     
+     output.write(float4(height.x, height.y, 0, 1), tpig);
+ }
 
 
 
@@ -348,12 +347,11 @@ kernel void naiveHeightCompute(
                                )
 {
     int N = output.get_width();
-    int L = params.L;
     
     float2 height = float2(0, 0);
     
-    int x = (int(tpig.x) - N / 2) * L / N;
-    int z = (int(tpig.y) - N / 2) * L / N;
+    int x = (int(tpig.x) - N / 2) * params.L / N;
+    int z = (int(tpig.y) - N / 2) * params.L / N;
     
     for (int n = -(N / 2); n < (N / 2); ++n) {
         
@@ -366,7 +364,7 @@ kernel void naiveHeightCompute(
             float2 noise1 = float2(n1, n2);
             float2 noise2 = float2(n3, n4);
             
-            float2 k = float2((M_PI_F * 2 * m) / L, (M_PI_F * 2 * n) / L);
+            float2 k = float2((M_PI_F * 2 * m) / params.L, (M_PI_F * 2 * n) / params.L);
             
             float2 v = h(k, t, params, noise1, noise2);
             
