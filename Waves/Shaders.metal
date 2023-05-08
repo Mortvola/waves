@@ -273,8 +273,8 @@ kernel void naiveHeightCompute(
      
     float2 height = float2(0, 0);
      
-    int x = (int(tpig.x) - N / 2) * params.L / N;
-    int z = (int(tpig.y) - N / 2) * params.L / N;
+    int x = (int(tpig.x) - N / 2); // * params.L / N;
+    int z = (int(tpig.y) - N / 2); // * params.L / N;
      
     for (int n = -(N / 2); n < (N / 2); ++n) {
         for (int m = -(N / 2); m < (N / 2); ++m) {
@@ -290,8 +290,11 @@ kernel void naiveHeightCompute(
              
             float2 v = h(k, t, params, noise1, noise2);
              
-            v = ComplexMultiply(v, float2(cos(k.x * x), sin(k.x * x)));
-            v = ComplexMultiply(v, float2(cos(k.y * z), sin(k.y * z)));
+            float theta = (k.x * x * params.L) / N;
+            v = ComplexMultiply(v, float2(cos(theta), sin(theta)));
+            
+            theta = (k.y * z * params.L) / N;
+            v = ComplexMultiply(v, float2(cos(theta), sin(theta)));
              
             height += v;
         }

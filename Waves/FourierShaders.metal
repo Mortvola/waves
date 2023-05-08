@@ -154,3 +154,149 @@ kernel void inverseFFTDivide(
     
     input.write(float4(height.rg, 0, 1), tpig);
 }
+
+
+float2 h(
+         float2 k,
+         float t,
+         const device Params &params,
+         float2 noise1,
+         float2 noise2
+         );
+
+kernel void makeTimeTexture2(
+                            const device Params &params [[ buffer(0) ]],
+                            const device float &t [[ buffer(1) ]],
+                            texture2d<float, access::read> noise1 [[ texture(0) ]],
+                            texture2d<float, access::read> noise2 [[ texture(1) ]],
+                            texture2d<float, access::read> noise3 [[ texture(2) ]],
+                            texture2d<float, access::read> noise4 [[ texture(3) ]],
+                            texture2d<float, access::write> output [[ texture(4) ]],
+                            uint2 tpig [[ thread_position_in_grid ]]
+                            )
+{
+    int M = output.get_width();
+    
+    int m = tpig.x - M/2;
+    int n = tpig.y - M/2;
+
+    float ns1 = noise1.read(uint2(m + (M/2), n + (M/2))).r;
+    float ns2 = noise2.read(uint2(m + (M/2), n + (M/2))).r;
+    float ns3 = noise3.read(uint2(m + (M/2), n + (M/2))).r;
+    float ns4 = noise4.read(uint2(m + (M/2), n + (M/2))).r;
+     
+    float2 noiseA = float2(ns1, ns2);
+    float2 noiseB = float2(ns3, ns4);
+
+    float2 k = simd_float2((M_PI_F * 2 * float(m)) / float(params.L), (M_PI_F * 2 * float(n)) / float(params.L));
+    float2 v = h(k, t, params, noiseA, noiseB);
+    
+    if (((tpig.x & 1) ^ (tpig.y & 1)) == 1) {
+        v = -v;
+    }
+
+    output.write(float4(v.x, v.y, 0, 1), tpig);
+}
+
+kernel void horizontalFFTStage(
+                          const device int &stage [[ buffer(0) ]],
+                          texture2d<float, access::read> input [[ texture(0) ]],
+                          texture2d<float, access::write> output [[ texture(1) ]],
+                          uint2 tpig [[ thread_position_in_grid ]]
+                          )
+{
+    int lanesPerGroup = pow(2, float(stage + 1));
+    int M = input.get_width();
+
+    int sign = 1;
+    
+    uint x = tpig.x;
+    uint y = tpig.y;
+    
+    int index1 = 0;
+    int index2 = 0;
+
+    if (stage == 0) {
+        int length = log2(float(M));
+        
+        index1 = reverseBits((x / 2) * 2, length);
+        index2 = reverseBits((x / 2) * 2 + 1, length);
+
+        if ((x & 1) == 1) {
+            sign = -1;
+        }
+    }
+    else {
+        index1 = x % (lanesPerGroup / 2) + (x / lanesPerGroup) * lanesPerGroup;
+        index2 = index1 + (lanesPerGroup / 2);
+
+        if (index2 == int(x)) {
+            sign = -1;
+        }
+    }
+    
+    int groupButterflyIndex = x % (lanesPerGroup / 2);
+    float theta = (2.0 * M_PI_F * float(groupButterflyIndex)) / float(lanesPerGroup);
+    
+    // de Moivre's formula: (cos(theta) + i sin(theta))^n = cos(n * theta) + i sin(n * theta)
+    float2 w = float2(cos(theta), sin(theta)) * sign;
+    
+    float2 v1 = input.read(uint2(index1, y)).rg;
+    float2 v2 = input.read(uint2(index2, y)).rg;
+
+    float2 v = v1 + ComplexMultiply(v2, w);
+    
+    output.write(float4(v.x, v.y, 0, 1), tpig);
+}
+
+
+kernel void verticalFFTStage(
+                          const device int &stage [[ buffer(0) ]],
+                          texture2d<float, access::read> input [[ texture(0) ]],
+                          texture2d<float, access::write> output [[ texture(1) ]],
+                          uint2 tpig [[ thread_position_in_grid ]]
+                          )
+{
+    int lanesPerGroup = pow(2, float(stage + 1));
+    int M = input.get_height();
+    
+    int sign = 1;
+    
+    uint x = tpig.x;
+    uint y = tpig.y;
+    
+    int index1 = 0;
+    int index2 = 0;
+    
+    if (stage == 0) {
+        int length = log2(float(M));
+        
+        index1 = reverseBits((y / 2) * 2, length);
+        index2 = reverseBits((y / 2) * 2 + 1, length);
+        
+        if ((y & 1) == 1) {
+            sign = -1;
+        }
+    }
+    else {
+        index1 = y % (lanesPerGroup / 2) + (y / lanesPerGroup) * lanesPerGroup;
+        index2 = index1 + (lanesPerGroup / 2);
+
+        if (index2 == int(y)) {
+            sign = -1;
+        }
+    }
+    
+    int groupButterflyIndex = y % (lanesPerGroup / 2);
+    float theta = (2.0 * M_PI_F * float(groupButterflyIndex)) / float(lanesPerGroup);
+    
+    // de Moivre's formula: (cos(theta) + i sin(theta))^n = cos(n * theta) + i sin(n * theta)
+    float2 w = float2(cos(theta), sin(theta)) * sign;
+    
+    float2 v1 = input.read(uint2(x, index1)).rg;
+    float2 v2 = input.read(uint2(x, index2)).rg;
+
+    float2 v = v1 + ComplexMultiply(v2, w);
+    
+    output.write(float4(v.x, v.y, 0, 1), tpig);
+}

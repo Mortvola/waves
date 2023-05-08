@@ -82,7 +82,7 @@ class Renderer {
 
             let library = MetalView.shared.device.makeDefaultLibrary()
             
-            guard let function = library?.makeFunction(name: "makeTimeTexture") else {
+            guard let function = library?.makeFunction(name: "makeTimeTexture2") else {
                 return
             }
             
@@ -290,8 +290,15 @@ class Renderer {
 
                     computeEncoder.setBytes(&Settings.shared.time, length: MemoryLayout<Float>.size, index: 1)
 
-                    computeEncoder.setTexture(inputTexture?.h0ktexture, index: 0)
-                    computeEncoder.setTexture(h0ktTexture[0], index: 1)
+                    computeEncoder.setTexture(inputTexture?.noiseTexture1, index: 0)
+                    computeEncoder.setTexture(inputTexture?.noiseTexture2, index: 1)
+                    computeEncoder.setTexture(inputTexture?.noiseTexture3, index: 2)
+                    computeEncoder.setTexture(inputTexture?.noiseTexture4, index: 3)
+
+                    computeEncoder.setTexture(h0ktTexture[pingpong], index: 4)
+
+//                    computeEncoder.setTexture(inputTexture?.h0ktexture, index: 0)
+//                    computeEncoder.setTexture(h0ktTexture[0], index: 1)
                     
                     let threadsPerGrid = MTLSizeMake(N, N, 1)
                     

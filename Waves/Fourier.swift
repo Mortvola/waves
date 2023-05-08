@@ -31,8 +31,27 @@ class Fourier {
         
         try makeFFTPipelines()
         
-        test();
-        test2();
+//        let N = 16
+//        let t1 = test(N);
+//        let t2 = test3(N);
+//
+//        for z in 0..<N {
+//            for x in 0..<N {
+//                if abs(t1[z][x].x - t2[z][x].x) > 0.001 || abs(t1[z][x].y - t2[z][x].y) > 0.001 {
+//                    print(t1[z][x] - t2[z][x])
+//                }
+//            }
+//        }
+//
+//        let t3 = test2(N);
+//
+//        for z in 0..<N {
+//            for x in 0..<N {
+//                if abs(t1[z][x].x - t3[z][x].x) > 0.001 || abs(t1[z][x].y - t3[z][x].y) > 0.001 {
+//                    print(t1[z][x] - t3[z][x])
+//                }
+//            }
+//        }
     }
     
     func makeFFTPipelines() throws {
@@ -44,13 +63,13 @@ class Fourier {
 
         horzFFTPipeline = try MetalView.shared.device.makeComputePipelineState(function: horzFunction)
 
-        guard let inverseHorzFunction = library?.makeFunction(name: "inverseHorzFFTStage") else {
+        guard let inverseHorzFunction = library?.makeFunction(name: "horizontalFFTStage") else {
             return
         }
         
         inverseHorzFFTPipeline = try MetalView.shared.device.makeComputePipelineState(function: inverseHorzFunction)
 
-        guard let vertFunction = library?.makeFunction(name: "inverseVertFFTStage") else {
+        guard let vertFunction = library?.makeFunction(name: "verticalFFTStage") else {
             return
         }
 
@@ -103,7 +122,7 @@ class Fourier {
         // Perform horizontal inverse FFT
         computeEncoder.setComputePipelineState(inverseHorzFFTPipeline!)
         
-        computeEncoder.setTexture(inverseButterflyTexture, index: 2)
+//        computeEncoder.setTexture(inverseButterflyTexture, index: 2)
         
         let stages = Int(log2(Float(M)))
 
@@ -136,7 +155,7 @@ class Fourier {
     func inverseVerticalFFT(computeEncoder: MTLComputeCommandEncoder, data: [MTLTexture], startingBuffer: Int) -> Int {
         computeEncoder.setComputePipelineState(inverseVertFFTPipeline!)
 
-        computeEncoder.setTexture(inverseButterflyTexture, index: 2)
+//        computeEncoder.setTexture(inverseButterflyTexture, index: 2)
 
         let stages = Int(log2(Float(M)))
 
@@ -246,53 +265,118 @@ class Fourier {
         return v;
     }
     
-    func test() {
-        let M = 8;
-        let N = 1
+    func test(_ M: Int) -> [[simd_float2]] {
         let params = Settings.shared
              
         let t: Float = 0;
         
-        var height: [simd_float2] = []
+        var height: [[simd_float2]] = []
         
-        for _ in 0..<M {
-            height.append(simd_float2(0, 0))
-        }
-        
-        let z1 = 0
-        let z: Int = (z1 - N/2) * Int(params.L) / N;
-        let n = -N/2;
-        
-        for x1 in 0..<M {
-            let x: Int = (x1 - M/2) * Int(params.L) / M;
-             
-            for m in -Int(M / 2)..<Int(M / 2) {
-                let k = simd_float2((Float.pi * 2 * Float(m)) / Float(params.L), (Float.pi * 2 * Float(n)) / Float(params.L));
-                 
-                var v = h(k, t, params);
-                
-                print(v);
-                 
-                let theta = (Float.pi * 2 * Float(m + M/2) * Float(x1)) / Float(M);
-                v = ComplexMultiply(v, simd_float2(cos(theta), sin(theta)));
-//                v = ComplexMultiply(v, simd_float2(cos(k.x * Float(x)), sin(k.x * Float(x))));
-//                v = ComplexMultiply(v, simd_float2(cos(k.y * Float(z)), sin(k.y * Float(z))));
-                
-                print(v);
-                 
-                height[x1] += v;
+        for z in 0..<M {
+            height.append([])
+            
+            for _ in 0..<M {
+                height[z].append(simd_float2(0, 0))
             }
         }
         
-        for x in 0..<M {
-            if ((x & 1) == 1) {
-                height[x] = -height[x]
+        for y in -Int(M/2)..<Int(M/2) {
+            for x in -Int(M/2)..<Int(M/2) {
+                for n in -Int(M / 2)..<Int(M / 2) {
+                    for m in -Int(M / 2)..<Int(M / 2) {
+                        let k = simd_float2((Float.pi * 2 * Float(m)) / Float(params.L), (Float.pi * 2 * Float(n)) / Float(params.L));
+                        
+                        var v = h(k, t, params);
+                        
+                        var theta = (Float.pi * 2 * Float(m) * Float(x)) / Float(M);
+                        v = ComplexMultiply(v, simd_float2(cos(theta), sin(theta)));
+                        
+                        theta = (Float.pi * 2 * Float(n) * Float(y)) / Float(M);
+                        v = ComplexMultiply(v, simd_float2(cos(theta), sin(theta)));
+                        
+                        height[y + M/2][x + M/2] += v;
+                    }
+                }
+            }
+        }
+        
+//        for x in 0..<M {
+//            if ((x & 1) == 1) {
+//                height[x] = -height[x]
+//            }
+//        }
+
+//        for z in 0..<M {
+//            for x in 0..<M {
+//                print("(\(height[z][x].x), \(height[z][x].y))");
+//            }
+//        }
+        
+        return height
+    }
+
+    func test3(_ N: Int) -> [[simd_float2]] {
+        let params = Settings.shared
+             
+        let t: Float = 0;
+        
+        var height: [[simd_float2]] = []
+        
+        for z in 0..<N {
+            height.append([])
+            
+            for _ in 0..<N {
+                height[z].append(simd_float2(0, 0))
+            }
+        }
+        
+        for zPrime in 0..<N {
+            for xPrime in 0..<N {
+                for nPrime in 0..<N {
+                    
+                    var innerHeight = simd_float2(0, 0)
+                    
+                    for mPrime in 0..<N {
+                        let k = simd_float2((Float.pi * 2 * Float(mPrime - N/2)) / Float(params.L), (Float.pi * 2 * Float(nPrime - N/2)) / Float(params.L));
+                        
+                        var v = h(k, t, params);
+                        
+                        var theta = (Float.pi * 2 * Float(mPrime) * Float(xPrime)) / Float(N)
+                        v = ComplexMultiply(v, simd_float2(cos(theta), sin(theta)));
+                        
+                        v *= powf(-1, Float(mPrime))
+                        
+                        theta = (Float.pi * 2 * Float(nPrime) * Float(zPrime)) / Float(N)
+                        v = ComplexMultiply(v, simd_float2(cos(theta), sin(theta)));
+
+                        v *= powf(-1, Float(nPrime))
+
+                        innerHeight += v;
+                    }
+
+                    height[zPrime][xPrime] += innerHeight;
+                }
+            }
+        }
+        
+        for z in -Int(N/2)..<Int(N/2) {
+            for x in -Int(N/2)..<Int(N/2) {
+                if (((x & 1) ^ (z & 1)) == 1) {
+                    height[z + N/2][x + N/2] = -height[z + N/2][x + N/2]
+                }
             }
         }
 
-        print(height);
+//        print("-------")
+//        for z in 0..<N {
+//            for x in 0..<N {
+//                print("(\(height[z][x].x), \(height[z][x].y))");
+//            }
+//        }
+        
+        return height
     }
-    
+
     func reverseBits(_ n: UInt, _ length: UInt) -> UInt {
         var r: UInt = 0;
         var n1 = n;
@@ -309,64 +393,63 @@ class Fourier {
         return r;
     }
 
-    func test2() {
-        let M = 8;
-        let N = 1;
+    func testMakeTimeTexture(_ N: Int, _ height: inout [[simd_float2]]) {
         let params = Settings.shared
         let t: Float = 0
-        
-        var height: [[simd_float2]] = [[], []]
-        
-        for _ in 0..<M {
-            height[0].append(simd_float2(0, 0))
-            height[1].append(simd_float2(0, 0))
-        }
-        var pingpong = 0
 
-        let stages = Int(log2(Float(M)))
-        
-        for stage in 0..<stages {
-            for x1 in 0..<M {
-                let lanesPerGroup: Int = Int(powf(2, Float(stage + 1)));
+        for nPrime in 0..<N {
+            for mPrime in 0..<N {
+                let k = simd_float2((Float.pi * 2 * Float(mPrime - N/2)) / Float(params.L), (Float.pi * 2 * Float(nPrime - N/2)) / Float(params.L));
+                var v = h(k, t, params);
                 
+                if (((mPrime & 1) ^ (nPrime & 1)) == 1) {
+                    v = -v;
+                }
+                
+                height[nPrime][mPrime] = v;
+            }
+        }
+
+        print("Initial --------")
+        for z in 0..<N {
+            for x in 0..<N {
+                print("(\(height[z][x].x), \(height[z][x].y))");
+            }
+        }
+    }
+        
+    func testHorizontalFFTStage(_ stage: Int, _ N: Int, _ input: [[simd_float2]], _ output: inout [[simd_float2]]) {
+        for z in 0..<N {
+            for x in 0..<N {
+                let lanesPerGroup: Int = Int(powf(2, Float(stage + 1)));
+
                 var sign: Int = 1;
                 
-                var v1 = simd_float2(0, 0)
-                var v2 = simd_float2(0, 0)
+                var index1 = 0;
+                var index2 = 0;
                 
                 if (stage == 0) {
-                    let length = log2(Float(M));
-                    let index1 = Int(reverseBits(UInt((x1 / 2) * 2), UInt(length)));
-                    let index2 = Int(reverseBits(UInt((x1 / 2) * 2 + 1), UInt(length)));
+                    let length = log2(Float(N));
+                    index1 = Int(reverseBits(UInt((x / 2) * 2), UInt(length)));
+                    index2 = Int(reverseBits(UInt((x / 2) * 2 + 1), UInt(length)));
 
-                    if ((x1 & 1) == 1) {
+                    if ((x & 1) == 1) {
                         sign = -1;
                     }
-                    
-                    var m = index1 - M/2;
-                    let n = 0 - N/2;
-                    
-                    var k = simd_float2((Float.pi * 2 * Float(m)) / Float(params.L), (Float.pi * 2 * Float(n)) / Float(params.L));
-                    v1 = h(k, t, params);
-                    
-                    m = index2 - M/2;
-                    
-                    k = simd_float2((Float.pi * 2 * Float(m)) / Float(params.L), (Float.pi * 2 * Float(n)) / Float(params.L));
-                    v2 = h(k, t, params);
                 }
                 else {
-                    let index1: Int = x1 % (lanesPerGroup / 2) + (x1 / lanesPerGroup) * lanesPerGroup;
-                    let index2: Int = index1 + (lanesPerGroup / 2);
+                    index1 = x % (lanesPerGroup / 2) + (x / lanesPerGroup) * lanesPerGroup;
+                    index2 = index1 + (lanesPerGroup / 2);
 
-                    if (index2 == x1) {
+                    if (index2 == x) {
                         sign = -1;
                     }
-                    
-                    v1 = height[pingpong][index1]
-                    v2 = height[pingpong][index2]
                 }
                 
-                let groupButterflyIndex: Int = x1 % (lanesPerGroup / 2);
+                let v1 = input[z][index1]
+                let v2 = input[z][index2]
+
+                let groupButterflyIndex: Int = x % (lanesPerGroup / 2);
                 
                 let theta: Float = (2.0 * Float.pi * Float(groupButterflyIndex)) / Float(lanesPerGroup);
                 
@@ -374,22 +457,99 @@ class Fourier {
                 var w = simd_float2(cos(theta), sin(theta));
                 w *= Float(sign);
                 
-//                print("w = \(w), v1 = \(v1), v2 = \(v2)")
-                height[pingpong ^ 1][x1] = v1 + ComplexMultiply(v2, w);
+                output[z][x] = v1 + ComplexMultiply(v2, w);
             }
-            
+        }
+    }
+
+    func testVerticalFFTStage(_ stage: Int, _ N: Int, _ input: [[simd_float2]], _ output: inout [[simd_float2]]) {
+        for z in 0..<N {
+            for x in 0..<N {
+                let lanesPerGroup: Int = Int(powf(2, Float(stage + 1)));
+
+                var sign: Int = 1;
+                
+                var index1 = 0;
+                var index2 = 0;
+                
+                if (stage == 0) {
+                    let length = log2(Float(N));
+                    index1 = Int(reverseBits(UInt((z / 2) * 2), UInt(length)));
+                    index2 = Int(reverseBits(UInt((z / 2) * 2 + 1), UInt(length)));
+
+                    if ((z & 1) == 1) {
+                        sign = -1;
+                    }
+                }
+                else {
+                    index1 = z % (lanesPerGroup / 2) + (z / lanesPerGroup) * lanesPerGroup;
+                    index2 = index1 + (lanesPerGroup / 2);
+
+                    if (index2 == z) {
+                        sign = -1;
+                    }
+                }
+                
+                let v1 = input[index1][x]
+                let v2 = input[index2][x]
+
+                let groupButterflyIndex: Int = z % (lanesPerGroup / 2);
+                
+                let theta: Float = (2.0 * Float.pi * Float(groupButterflyIndex)) / Float(lanesPerGroup);
+                
+                // de Moivre's formula: (cos(theta) + i sin(theta))^n = cos(n * theta) + i sin(n * theta)
+                var w = simd_float2(cos(theta), sin(theta));
+                w *= Float(sign);
+                
+                output[z][x] = v1 + ComplexMultiply(v2, w);
+            }
+        }
+    }
+
+    func test2(_ N: Int) -> [[simd_float2]] {
+        var height: [[[simd_float2]]] = []
+        var pingpong = 0
+        
+        for p in 0..<2 {
+            height.append([])
+            for n in 0..<N {
+                height[p].append([])
+                for _ in 0..<N {
+                    height[p][n].append(simd_float2(0, 0))
+                }
+            }
+        }
+        
+        testMakeTimeTexture(N, &height[0])
+        
+        let stages = Int(log2(Float(N)))
+        
+        for stage in 0..<stages {
+            testHorizontalFFTStage(stage, N, height[pingpong], &height[pingpong ^ 1])
             pingpong ^= 1
-            
-//            print(height[pingpong])
         }
-
-        for x in 0..<M {
-            if ((x & 1) == 1) {
-                height[pingpong][x] = -height[pingpong][x]
+        
+        for stage in 0..<stages {
+            testVerticalFFTStage(stage, N, height[pingpong], &height[pingpong ^ 1])
+            pingpong ^= 1
+        }
+        
+        for z in 0..<N {
+            for x in 0..<N {
+                if (((x & 1) ^ (z & 1)) == 1) {
+                    height[pingpong][z][x] = -height[pingpong][z][x]
+                }
             }
         }
 
-        print(height[pingpong])
+        print("--------")
+        for z in 0..<N {
+            for x in 0..<N {
+                print("(\(height[pingpong][z][x].x), \(height[pingpong][z][x].y))");
+            }
+        }
+        
+        return height[pingpong]
     }
 }
 

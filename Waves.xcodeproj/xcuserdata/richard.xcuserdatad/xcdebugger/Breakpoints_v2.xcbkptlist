@@ -14,8 +14,8 @@
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "422"
-            endingLineNumber = "422"
+            startingLineNumber = "429"
+            endingLineNumber = "429"
             landmarkName = "allocatePlane(dimensions:segments:)"
             landmarkType = "9">
          </BreakpointContent>
@@ -78,8 +78,8 @@
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "321"
-            endingLineNumber = "321"
+            startingLineNumber = "328"
+            endingLineNumber = "328"
             landmarkName = "updateFrameConstants()"
             landmarkType = "7">
             <Locations>
@@ -222,8 +222,8 @@
             filePath = "Waves/Fourier.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "137"
-            endingLineNumber = "137"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
             landmarkName = "inverseVerticalFFT(computeEncoder:data:startingBuffer:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -238,392 +238,10 @@
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "310"
-            endingLineNumber = "310"
+            startingLineNumber = "317"
+            endingLineNumber = "317"
             landmarkName = "updateTexture(commandQueue:)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "B5DA1B6B-46E0-4A44-9928-43E8C607DB62"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "294"
-            endingLineNumber = "294"
-            landmarkName = "Fourier"
-            landmarkType = "3">
-            <Locations>
-               <Location
-                  uuid = "B5DA1B6B-46E0-4A44-9928-43E8C607DB62 - bcaa6dbdd08aa81d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.reverseBits(Swift.UInt, Swift.UInt) -&gt; Swift.UInt"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "293"
-                  endingLineNumber = "293"
-                  offsetFromSymbolStart = "88">
-               </Location>
-               <Location
-                  uuid = "B5DA1B6B-46E0-4A44-9928-43E8C607DB62 - bcaa6dbdd08aaffc"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.reverseBits(Swift.UInt, Swift.UInt) -&gt; Swift.UInt"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "294"
-                  endingLineNumber = "294"
-                  offsetFromSymbolStart = "92">
-               </Location>
-               <Location
-                  uuid = "B5DA1B6B-46E0-4A44-9928-43E8C607DB62 - a625c3e295b5031d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "294"
-                  endingLineNumber = "294"
-                  offsetFromSymbolStart = "6432">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DF46620C-394A-45E7-937C-ADB040B63915"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "385"
-            endingLineNumber = "385"
-            landmarkName = "test2()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "098C84C6-638C-4B7C-8756-75C27DAB4132"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "328"
-            endingLineNumber = "328"
-            landmarkName = "test2()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "098C84C6-638C-4B7C-8756-75C27DAB4132 - 23ac2bdae10fc7ae"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "304"
-                  endingLineNumber = "304"
-                  offsetFromSymbolStart = "4300">
-               </Location>
-               <Location
-                  uuid = "098C84C6-638C-4B7C-8756-75C27DAB4132 - 23ac2bdae10fc7ae"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "304"
-                  endingLineNumber = "304"
-                  offsetFromSymbolStart = "4308">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "AE4C7183-BB1C-4877-8050-97504285B8AC"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "378"
-            endingLineNumber = "378"
-            landmarkName = "test2()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "AE4C7183-BB1C-4877-8050-97504285B8AC - 23ac2bdae10f3f8f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "367"
-                  endingLineNumber = "367"
-                  offsetFromSymbolStart = "14520">
-               </Location>
-               <Location
-                  uuid = "AE4C7183-BB1C-4877-8050-97504285B8AC - 23ac2bdae10f3fa8"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "366"
-                  endingLineNumber = "366"
-                  offsetFromSymbolStart = "13652">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "75FC13BD-C6F4-4CE7-AAA1-DAE116F7AF8D"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "350"
-            endingLineNumber = "350"
-            landmarkName = "test2()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "75FC13BD-C6F4-4CE7-AAA1-DAE116F7AF8D - 23ac2bdae10fc523"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "323"
-                  endingLineNumber = "323"
-                  offsetFromSymbolStart = "8444">
-               </Location>
-               <Location
-                  uuid = "75FC13BD-C6F4-4CE7-AAA1-DAE116F7AF8D - 23ac2bdae10fc523"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "323"
-                  endingLineNumber = "323"
-                  offsetFromSymbolStart = "8452">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "CE9EF021-DEDE-445E-84A4-E870E860D3FA"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "365"
-            endingLineNumber = "365"
-            landmarkName = "test2()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "00CCBFF8-AB45-4BB6-93BE-D753901AA778"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "383"
-            endingLineNumber = "383"
-            landmarkName = "test2()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "5FD6946E-2012-4AD8-AB62-45F29C6BD3F9"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "371"
-            endingLineNumber = "371"
-            landmarkName = "test2()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "34036907-CE3D-4CD4-9456-5671CD017AC4"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "374"
-            endingLineNumber = "374"
-            landmarkName = "test2()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "34036907-CE3D-4CD4-9456-5671CD017AC4 - 23ac2bdae10f3855"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "345"
-                  endingLineNumber = "345"
-                  offsetFromSymbolStart = "10868">
-               </Location>
-               <Location
-                  uuid = "34036907-CE3D-4CD4-9456-5671CD017AC4 - 23ac2bdae10f3855"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "345"
-                  endingLineNumber = "345"
-                  offsetFromSymbolStart = "10876">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "C95486A4-E3DE-4438-8BF2-6669B92F1819"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "349"
-            endingLineNumber = "349"
-            landmarkName = "test2()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "C95486A4-E3DE-4438-8BF2-6669B92F1819 - 23ac2bdae10fc55c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "322"
-                  endingLineNumber = "322"
-                  offsetFromSymbolStart = "8004">
-               </Location>
-               <Location
-                  uuid = "C95486A4-E3DE-4438-8BF2-6669B92F1819 - 23ac2bdae10f32c2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "388"
-                  endingLineNumber = "388"
-                  offsetFromSymbolStart = "8200">
-               </Location>
-               <Location
-                  uuid = "C95486A4-E3DE-4438-8BF2-6669B92F1819 - 23ac2bdae10f32c2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "388"
-                  endingLineNumber = "388"
-                  offsetFromSymbolStart = "8208">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -636,9 +254,9 @@
             filePath = "Waves/Fourier.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "272"
-            endingLineNumber = "272"
-            landmarkName = "test()"
+            startingLineNumber = "289"
+            endingLineNumber = "289"
+            landmarkName = "test(_:)"
             landmarkType = "7">
             <Locations>
                <Location
@@ -692,114 +310,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D0BB649B-87F1-4230-BD85-595F85BDD735"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "354"
-            endingLineNumber = "354"
-            landmarkName = "test2()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "D0BB649B-87F1-4230-BD85-595F85BDD735 - 23ac2bdae10f32e3"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "387"
-                  endingLineNumber = "387"
-                  offsetFromSymbolStart = "9792">
-               </Location>
-               <Location
-                  uuid = "D0BB649B-87F1-4230-BD85-595F85BDD735 - 23ac2bdae10f3d1c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "386"
-                  endingLineNumber = "386"
-                  offsetFromSymbolStart = "8896">
-               </Location>
-               <Location
-                  uuid = "D0BB649B-87F1-4230-BD85-595F85BDD735 - 23ac2bdae10f3d1c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "386"
-                  endingLineNumber = "386"
-                  offsetFromSymbolStart = "8888">
-               </Location>
-               <Location
-                  uuid = "D0BB649B-87F1-4230-BD85-595F85BDD735 - 23ac2bdae10f3d1c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "386"
-                  endingLineNumber = "386"
-                  offsetFromSymbolStart = "8904">
-               </Location>
-               <Location
-                  uuid = "D0BB649B-87F1-4230-BD85-595F85BDD735 - 23ac2bdae10f3d1c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "386"
-                  endingLineNumber = "386"
-                  offsetFromSymbolStart = "8908">
-               </Location>
-               <Location
-                  uuid = "D0BB649B-87F1-4230-BD85-595F85BDD735 - 23ac2bdae10f3225"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "393"
-                  endingLineNumber = "393"
-                  offsetFromSymbolStart = "9008">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "3D29A59F-DAED-4147-B6FD-280129070C0F"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -807,216 +317,9 @@
             filePath = "Waves/Fourier.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "274"
-            endingLineNumber = "274"
-            landmarkName = "test()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "71F8166C-1C8D-48E3-80CE-557A8D68D1DB"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "278"
-            endingLineNumber = "278"
-            landmarkName = "test()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "71F8166C-1C8D-48E3-80CE-557A8D68D1DB - a625c3e295b50633"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "272"
-                  endingLineNumber = "272"
-                  offsetFromSymbolStart = "5292">
-               </Location>
-               <Location
-                  uuid = "71F8166C-1C8D-48E3-80CE-557A8D68D1DB - a625c3e295b50633"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "272"
-                  endingLineNumber = "272"
-                  offsetFromSymbolStart = "4376">
-               </Location>
-               <Location
-                  uuid = "71F8166C-1C8D-48E3-80CE-557A8D68D1DB - a625c3e295b50633"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "272"
-                  endingLineNumber = "272"
-                  offsetFromSymbolStart = "4500">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "4F5FD25F-624A-4046-84A5-9604D9E9BE5E"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "392"
-            endingLineNumber = "392"
-            landmarkName = "test2()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "4F5FD25F-624A-4046-84A5-9604D9E9BE5E - 6ab551d2186779b1"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.ComplexMultiply(Swift.SIMD2&lt;Swift.Float&gt;, Swift.SIMD2&lt;Swift.Float&gt;) -&gt; Swift.SIMD2&lt;Swift.Float&gt;"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "438"
-                  endingLineNumber = "438"
-                  offsetFromSymbolStart = "52">
-               </Location>
-               <Location
-                  uuid = "4F5FD25F-624A-4046-84A5-9604D9E9BE5E - 23ac2bdae10f34b3"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "435"
-                  endingLineNumber = "435"
-                  offsetFromSymbolStart = "16216">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DAA28E40-AA79-4A7E-8B38-6138CC1FA99C"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "393"
-            endingLineNumber = "393"
-            landmarkName = "test2()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "DAA28E40-AA79-4A7E-8B38-6138CC1FA99C - 23ac2bdae10f3225"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "393"
-                  endingLineNumber = "393"
-                  offsetFromSymbolStart = "12612">
-               </Location>
-               <Location
-                  uuid = "DAA28E40-AA79-4A7E-8B38-6138CC1FA99C - 23ac2bdae10f3225"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "393"
-                  endingLineNumber = "393"
-                  offsetFromSymbolStart = "12676">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "803E5486-4CFD-43E4-997B-1A78DFC1EFB9"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "346"
-            endingLineNumber = "346"
-            landmarkName = "test2()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "6B7A97E2-9DBF-4234-99C3-12A0D18DB60F"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "355"
-            endingLineNumber = "355"
-            landmarkName = "test2()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "9D63F267-9DC4-4254-8F9A-9D6833EE2317"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Fourier.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "373"
-            endingLineNumber = "373"
-            landmarkName = "test2()"
+            startingLineNumber = "291"
+            endingLineNumber = "291"
+            landmarkName = "test(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1030,9 +333,9 @@
             filePath = "Waves/Fourier.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "287"
-            endingLineNumber = "287"
-            landmarkName = "test()"
+            startingLineNumber = "303"
+            endingLineNumber = "303"
+            landmarkName = "test(_:)"
             landmarkType = "7">
             <Locations>
                <Location
@@ -1086,20 +389,84 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D7218EBA-1405-4883-805D-467BD00ECABD"
+            uuid = "09E77BA1-9CC1-42F1-8604-8B774B6BFD8B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Renderer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "237"
+            endingLineNumber = "237"
+            landmarkName = "updateTexture(commandQueue:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "09E77BA1-9CC1-42F1-8604-8B774B6BFD8B - d25a7a45f63bf480"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.updateTexture(commandQueue: __C.MTLCommandQueue) -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "237"
+                  endingLineNumber = "237"
+                  offsetFromSymbolStart = "228">
+               </Location>
+               <Location
+                  uuid = "09E77BA1-9CC1-42F1-8604-8B774B6BFD8B - d25a7a45f63bf480"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.updateTexture(commandQueue: __C.MTLCommandQueue) -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "237"
+                  endingLineNumber = "237"
+                  offsetFromSymbolStart = "284">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7DACD592-4D94-4618-8CC3-B285378998F5"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Fourier.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "316"
+            endingLineNumber = "316"
+            landmarkName = "test(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3EBAAD29-4542-4912-B50A-907D1D8F5B1E"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Waves/Fourier.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "386"
-            endingLineNumber = "386"
-            landmarkName = "test2()"
+            startingLineNumber = "544"
+            endingLineNumber = "544"
+            landmarkName = "test2(_:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "D7218EBA-1405-4883-805D-467BD00ECABD - 23ac2bdae10f3dda"
+                  uuid = "3EBAAD29-4542-4912-B50A-907D1D8F5B1E - 23ac2bdae10f21b6"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -1109,12 +476,12 @@
                   urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "380"
-                  endingLineNumber = "380"
-                  offsetFromSymbolStart = "14476">
+                  startingLineNumber = "536"
+                  endingLineNumber = "536"
+                  offsetFromSymbolStart = "4392">
                </Location>
                <Location
-                  uuid = "D7218EBA-1405-4883-805D-467BD00ECABD - 23ac2bdae10f3dda"
+                  uuid = "3EBAAD29-4542-4912-B50A-907D1D8F5B1E - 23ac2bdae10f2195"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -1124,24 +491,263 @@
                   urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "380"
-                  endingLineNumber = "380"
-                  offsetFromSymbolStart = "14480">
+                  startingLineNumber = "537"
+                  endingLineNumber = "537"
+                  offsetFromSymbolStart = "4432">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "479F6892-25AF-49F5-8F53-D11AECDD72C0"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Fourier.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "553"
+            endingLineNumber = "553"
+            landmarkName = "test2(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1C11F819-9138-499D-A2EE-881AD95C17E7"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Fourier.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "378"
+            endingLineNumber = "378"
+            landmarkName = "test3(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6B97AE34-B7ED-4A6F-BEEC-017808AED9BD"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Fourier.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "init(M:N:commandQueue:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A4F4C243-BC72-4C84-ABBB-0894A0B5B0C7"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Fourier.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "47"
+            endingLineNumber = "47"
+            landmarkName = "init(M:N:commandQueue:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "A4F4C243-BC72-4C84-ABBB-0894A0B5B0C7 - 99e4e38510d87bf1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Fourier.makeFFTPipelines() throws -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "47"
+                  endingLineNumber = "47"
+                  offsetFromSymbolStart = "56">
                </Location>
                <Location
-                  uuid = "D7218EBA-1405-4883-805D-467BD00ECABD - 23ac2bdae10f3dda"
+                  uuid = "A4F4C243-BC72-4C84-ABBB-0894A0B5B0C7 - ee931c1cb9c9563a"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "Waves.Fourier.test2() -&gt; ()"
+                  symbolName = "Waves.Fourier.init(M: Swift.Int, N: Swift.Int, commandQueue: __C.MTLCommandQueue) throws -&gt; Waves.Fourier"
                   moduleName = "Waves"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "380"
-                  endingLineNumber = "380"
-                  offsetFromSymbolStart = "13820">
+                  startingLineNumber = "46"
+                  endingLineNumber = "46"
+                  offsetFromSymbolStart = "884">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "56BC05F8-E7EE-421E-A7FA-16E2730712F7"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Fourier.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
+            landmarkName = "init(M:N:commandQueue:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "56BC05F8-E7EE-421E-A7FA-16E2730712F7 - ee931c1cb9c95157"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Fourier.init(M: Swift.Int, N: Swift.Int, commandQueue: __C.MTLCommandQueue) throws -&gt; Waves.Fourier"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "41"
+                  endingLineNumber = "41"
+                  offsetFromSymbolStart = "2152">
+               </Location>
+               <Location
+                  uuid = "56BC05F8-E7EE-421E-A7FA-16E2730712F7 - ee931c1cb9c95157"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Fourier.init(M: Swift.Int, N: Swift.Int, commandQueue: __C.MTLCommandQueue) throws -&gt; Waves.Fourier"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "41"
+                  endingLineNumber = "41"
+                  offsetFromSymbolStart = "2412">
+               </Location>
+               <Location
+                  uuid = "56BC05F8-E7EE-421E-A7FA-16E2730712F7 - ee931c1cb9c95157"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Fourier.init(M: Swift.Int, N: Swift.Int, commandQueue: __C.MTLCommandQueue) throws -&gt; Waves.Fourier"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "41"
+                  endingLineNumber = "41"
+                  offsetFromSymbolStart = "2432">
+               </Location>
+               <Location
+                  uuid = "56BC05F8-E7EE-421E-A7FA-16E2730712F7 - ee931c1cb9c95765"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Fourier.init(M: Swift.Int, N: Swift.Int, commandQueue: __C.MTLCommandQueue) throws -&gt; Waves.Fourier"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "55"
+                  endingLineNumber = "55"
+                  offsetFromSymbolStart = "544">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "77F8FA11-F7C1-4EF4-B553-56AACC6D90A2"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Fourier.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "55"
+            endingLineNumber = "55"
+            landmarkName = "init(M:N:commandQueue:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4ED16AA4-7532-4C6F-BDD0-FBF4342D875E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Fourier.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
+            landmarkName = "init(M:N:commandQueue:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8DD67823-B875-4D2C-8AD7-0E18654EC5E1"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Fourier.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
+            landmarkName = "init(M:N:commandQueue:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "8DD67823-B875-4D2C-8AD7-0E18654EC5E1 - ee931c1cb9c956e1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Fourier.init(M: Swift.Int, N: Swift.Int, commandQueue: __C.MTLCommandQueue) throws -&gt; Waves.Fourier"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "51"
+                  endingLineNumber = "51"
+                  offsetFromSymbolStart = "5240">
+               </Location>
+               <Location
+                  uuid = "8DD67823-B875-4D2C-8AD7-0E18654EC5E1 - ee931c1cb9c95765"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Fourier.init(M: Swift.Int, N: Swift.Int, commandQueue: __C.MTLCommandQueue) throws -&gt; Waves.Fourier"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Fourier.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "55"
+                  endingLineNumber = "55"
+                  offsetFromSymbolStart = "544">
                </Location>
             </Locations>
          </BreakpointContent>
