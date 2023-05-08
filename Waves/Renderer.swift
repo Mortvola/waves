@@ -51,7 +51,7 @@ class Renderer {
     
     private var fft: Fourier? = nil
     
-    private var useNaivePipeline = true
+    private var useNaivePipeline = false
     private var naivePipeline: MTLComputePipelineState? = nil
     
     func initialize() throws {

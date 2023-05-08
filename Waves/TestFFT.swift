@@ -39,8 +39,8 @@ class TestFFT {
     }
     
     func makeTexture() throws -> MTLTexture {
-        let t = Date().timeIntervalSince1970
-        let random = GKARC4RandomSource(seed: "\(t)".data(using: .utf8)!)
+//        let t = Date().timeIntervalSince1970
+//        let random = GKARC4RandomSource(seed: "\(t)".data(using: .utf8)!)
         
         let length = N * MemoryLayout<simd_float2>.size
         guard let buffer = MetalView.shared.device.makeBuffer(length: length, options: .storageModeShared) else {

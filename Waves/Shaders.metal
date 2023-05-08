@@ -92,17 +92,25 @@ kernel void makeInputTexture(
     float g = 9.8; // meters per second^2
     float L2 = (params.windSpeed * params.windSpeed) / g; // (m^2 / s) * (s^2 / m) --> meter seconds
     
-    uint m = tpig.x; // - N / 2;
-    uint n = tpig.y; // - N / 2;
-                     
-    float2 k = float2(M_PI_F * (2 * m - N) / L, M_PI_F * (2 * n - N) / L);
-    
-    if ((m & 1) == 1) {
-        k.x = M_PI_F * (2 * m + 1 - N) / L;
+    int mPrime = tpig.x;
+    int nPrime = tpig.y;
+
+    if ((tpig.x & 1) == 1) {
+        mPrime += 1;
     }
-    
-    if ((n & 1) == 1) {
-        k.y = M_PI_F * (2 * n + 1 - N) / L;
+
+    if ((tpig.y & 1) == 1) {
+        nPrime += 1;
+    }
+
+    float2 k = float2(M_PI_F * (2 * mPrime - N) / L, M_PI_F * (2 * nPrime - N) / L);
+
+    if ((tpig.x & 1) == 1) {
+        k.x = M_PI_F * (2 * mPrime + 1 - N) / L;
+    }
+
+    if ((tpig.y & 1) == 1) {
+        k.y = M_PI_F * (2 * nPrime + 1 - N) / L;
     }
     
     float kLength = length(k);
@@ -127,7 +135,7 @@ kernel void makeInputTexture(
             * exp(-1 / (kLength * kLength * L2 * L2))
             / pow(kLength, 4))
             * pow(kdotw, 2)
-            * exp(-kLength * kLength * L2 * L2 * damping * damping);
+            * exp(-kLength * kLength * damping * damping);
         
         h0k1 = sqrt(phk / 2.0) * noise1;
         
@@ -137,12 +145,12 @@ kernel void makeInputTexture(
             * exp(-1 / (kLength * kLength * L2 * L2))
             / pow(kLength, 4))
             * pow(kdotw, 2)
-            * exp(-kLength * kLength * L2 * L2 * damping * damping);
+            * exp(-kLength * kLength * damping * damping);
         
         h0k2 = sqrt(phk) * noise2 / sqrt(2.0);
     }
     
-    output.write(float4(h0k1.x, h0k1.y, h0k2.x, h0k2.y), ushort2(tpig.x, tpig.y));
+    output.write(float4(h0k1.x, h0k1.y, h0k2.x, h0k2.y), tpig);
 }
 
 kernel void makeTimeTexture(
@@ -158,23 +166,28 @@ kernel void makeTimeTexture(
     float L = params.L;
     float N = input.get_width();
 
-    uint n = tpig.x; //  - N / 2;
-    uint m = tpig.y; //  - N / 2;
+    int mPrime = tpig.x; //  - N / 2;
+    int nPrime = tpig.y; //  - N / 2;
+
+    if ((tpig.x & 1) == 1) {
+        mPrime += 1;
+    }
+
+    if ((tpig.y & 1) == 1) {
+        nPrime += 1;
+    }
 
     float g = 9.8; // meters per second^2
     
-//    float kx = M_PI_F * (2 * m - N) / L;
-//    float kz = M_PI_F * (2 * n - N) / L;
+    float kx = M_PI_F * (2 * mPrime - N) / L;
+    float kz = M_PI_F * (2 * nPrime - N) / L;
 
-    float kx = M_PI_F * (2 * m - N) / L;
-    float kz = M_PI_F * (2 * n - N) / L;
-
-    if ((m & 1) == 1) {
-        kx = M_PI_F * (2 * m + 1 - N) / L;
+    if ((mPrime & 1) == 1) {
+        kx = M_PI_F * (2 * mPrime + 1 - N) / L;
     }
 
-    if ((n & 1) == 1) {
-        kz = M_PI_F * (2 * n + 1 - N) / L;
+    if ((nPrime & 1) == 1) {
+        kz = M_PI_F * (2 * nPrime + 1 - N) / L;
     }
 
     float2 k = float2(kx, kz);
