@@ -69,10 +69,11 @@ vertex VertexOut vertexWaveShader(
 }
 
 fragment float4 fragmentWaterShader(
-                                    VertexOut in [[ stage_in ]]
+                                    VertexOut in [[ stage_in ]],
+                                    const device float4 &color [[ buffer(0) ]]
                                     )
 {
-    return float4(1, 0, 0, 1);
+    return color;
 }
 
 kernel void makeInputTexture(
@@ -231,7 +232,7 @@ float2 h(
         float phk = (params.A
             * exp(-1 / (kLength * kLength * L2 * L2))
             / pow(kLength, 4))
-            * pow(kdotw, 2)
+            * pow(kdotw, 8)
             * exp(-kLength * kLength * damping * damping);
         
         h0k1 = sqrt(phk / 2.0) * noise1;
@@ -241,7 +242,7 @@ float2 h(
         phk = (params.A
             * exp(-1 / (kLength * kLength * L2 * L2))
             / pow(kLength, 4))
-            * pow(kdotw, 2)
+            * pow(kdotw, 8)
             * exp(-kLength * kLength * damping * damping);
         
         h0k2 = sqrt(phk / 2.0) * noise2;

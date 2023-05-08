@@ -15,6 +15,8 @@ class Renderer {
     static var shared = Renderer()
     
     private var commandQueue: MTLCommandQueue?
+    public var depthState: MTLDepthStencilState?
+
     private var tripleBufferIndex = 0
 
     private var N = 256
@@ -104,6 +106,16 @@ class Renderer {
 //            test = try TestFFT(N: 8, commandQueue: commandQueue!)
             
             makeNaivePipeline(commandQueue: commandQueue!, windDirection: Settings.shared.windspeed, windSpeed: Settings.shared.windspeed)
+            
+            let depthStateDescriptor = MTLDepthStencilDescriptor()
+            depthStateDescriptor.depthCompareFunction = .less
+            depthStateDescriptor.isDepthWriteEnabled = true
+            
+            guard let state = MetalView.shared.device.makeDepthStencilState(descriptor:depthStateDescriptor) else {
+                throw Errors.makeFunctionError
+            }
+            
+            self.depthState = state
         }
         catch{
             print(error)
@@ -288,7 +300,9 @@ class Renderer {
                     
                     computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
 
-                    computeEncoder.setBytes(&Settings.shared.time, length: MemoryLayout<Float>.size, index: 1)
+                    var time = Float(getTime())
+//                    computeEncoder.setBytes(&Settings.shared.time, length: MemoryLayout<Float>.size, index: 1)
+                    computeEncoder.setBytes(&time, length: MemoryLayout<Float>.size, index: 1)
 
                     computeEncoder.setTexture(inputTexture?.noiseTexture1, index: 0)
                     computeEncoder.setTexture(inputTexture?.noiseTexture2, index: 1)
@@ -335,7 +349,8 @@ class Renderer {
         
         guard
 //            let pipelineState = self.pipelineState,
-            let wavePipelineState = self.wavePipelineState
+            let wavePipelineState = self.wavePipelineState,
+            let depthState = self.depthState
         else {
             return
         }
@@ -380,15 +395,37 @@ class Renderer {
                     renderEncoder.setRenderPipelineState(wavePipelineState)
                     
                     renderEncoder.setCullMode(.back)
-                    
+                    renderEncoder.setDepthStencilState(depthState)
+
                     renderEncoder.setVertexBuffer(frameConstants, offset: 0, index: BufferIndex.frameConstants.rawValue)
                     
-                    if Settings.shared.wireframe {
-                        renderEncoder.setTriangleFillMode(.lines)
-                    }
+//                    if Settings.shared.wireframe {
+//                        renderEncoder.setTriangleFillMode(.lines)
+//                    }
                     
                     renderEncoder.setVertexTexture(h0ktTexture[pingpong], index: 3)
 
+                    var color = simd_float4(0, 0, 0, 1)
+
+                    renderEncoder.setFragmentBytes(&color, length: MemoryLayout<simd_float4>.size, index: 0)
+
+                    // Pass the vertex and index information to the vertex shader
+                    for (i, buffer) in wave!.vertexBuffers.enumerated() {
+                        renderEncoder.setVertexBuffer(buffer.buffer, offset: buffer.offset, index: i)
+                    }
+                    
+                    for submesh in wave!.submeshes {
+                        renderEncoder.drawIndexedPrimitives(type: submesh.primitiveType, indexCount: submesh.indexCount, indexType: submesh.indexType, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: submesh.indexBuffer.offset, instanceCount: 1)
+                    }
+
+                    if Settings.shared.wireframe {
+                        renderEncoder.setTriangleFillMode(.lines)
+                    }
+
+                    color = simd_float4(1, 0, 0, 1)
+                    
+                    renderEncoder.setFragmentBytes(&color, length: MemoryLayout<simd_float4>.size, index: 0)
+                    
                     // Pass the vertex and index information to the vertex shader
                     for (i, buffer) in wave!.vertexBuffers.enumerated() {
                         renderEncoder.setVertexBuffer(buffer.buffer, offset: buffer.offset, index: i)
