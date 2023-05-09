@@ -21,6 +21,12 @@ struct ContentView: View {
                     Spacer()
                 }
                 HStack {
+                    Checkbox(checked: $settings.xzDisplacement, label: "XZ Displacement")
+                        .foregroundColor(.white)
+                        .padding([.leading, .top])
+                    Spacer()
+                }
+                HStack {
                     Stepper(value: $settings.windspeed, in: 0...50, step: 0.1) {
                         Text("Wind Speed: \(String(format: "%.1f", settings.windspeed))")
                     }

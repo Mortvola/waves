@@ -171,11 +171,13 @@ kernel void makeTimeTexture2(
                             texture2d<float, access::read> noise2 [[ texture(1) ]],
                             texture2d<float, access::read> noise3 [[ texture(2) ]],
                             texture2d<float, access::read> noise4 [[ texture(3) ]],
-                            texture2d<float, access::write> output [[ texture(4) ]],
+                            texture2d<float, access::write> height [[ texture(4) ]],
+                            texture2d<float, access::write> dx [[ texture(5) ]],
+                            texture2d<float, access::write> dy [[ texture(6) ]],
                             uint2 tpig [[ thread_position_in_grid ]]
                             )
 {
-    int M = output.get_width();
+    int M = height.get_width();
     
     int m = tpig.x - M/2;
     int n = tpig.y - M/2;
@@ -195,7 +197,25 @@ kernel void makeTimeTexture2(
         v = -v;
     }
 
-    output.write(float4(v.x, v.y, 0, 1), tpig);
+    height.write(float4(v.x, v.y, 0, 1), tpig);
+    
+    float kLength = length(k);
+    
+    float2 dispX = 0;
+    float2 dispY = 0;
+
+    if (params.xzDisplacement) {
+        if (kLength != 0) {
+            dispX = ComplexMultiply(v, float2(0, -k.x / kLength));
+        }
+        
+        if (kLength != 0) {
+            dispY = ComplexMultiply(v, float2(0, -k.y / kLength));
+        }
+    }
+
+    dx.write(float4(dispX.x, dispX.y, 0, 1), tpig);
+    dy.write(float4(dispY.x, dispY.y, 0, 1), tpig);
 }
 
 kernel void horizontalFFTStage(

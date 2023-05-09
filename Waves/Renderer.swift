@@ -37,6 +37,12 @@ class Renderer {
     private var h0ktTexture: [MTLTexture] = []
     private var pingpong = 0
 
+    private var displacementX: [MTLTexture] = []
+    private var displacementXpingpong = 0
+
+    private var displacementY: [MTLTexture] = []
+    private var displacementYpingpong = 0
+
     private var updatePipeline: MTLComputePipelineState? = nil
 
 //    private var params: MTLBuffer? = nil
@@ -81,6 +87,12 @@ class Renderer {
             
             h0ktTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
             h0ktTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
+
+            displacementX.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
+            displacementX.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
+
+            displacementY.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
+            displacementY.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
 
             let library = MetalView.shared.device.makeDefaultLibrary()
             
@@ -255,10 +267,12 @@ class Renderer {
                         let p1 = inputTexture!.params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
                         p1[0].windDirection = simd_float2(cos(Settings.shared.windDirection / 180 * Float.pi), sin(Settings.shared.windDirection / 360 * Float.pi))
                         p1[0].windSpeed = Settings.shared.windspeed
+                        p1[0].windDirectionalFactor = Settings.shared.windDirectionalFactor
                         p1[0].L = Settings.shared.L
                         p1[0].A = Settings.shared.A
                         p1[0].l = Settings.shared.l
-                        
+                        p1[0].xzDisplacement = Settings.shared.xzDisplacement
+
                         computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
                         
 //                        let time = params!.contents().bindMemory(to: Float.self, capacity: MemoryLayout<Float>.size)
@@ -275,7 +289,9 @@ class Renderer {
 //                        computeEncoder.setTexture(inputTexture?.h0ktexture, index: 3)
                         
                         computeEncoder.setTexture(h0ktTexture[pingpong], index: 4)
-                        
+                        computeEncoder.setTexture(displacementX[displacementXpingpong], index: 5)
+                        computeEncoder.setTexture(displacementY[displacementYpingpong], index: 6)
+
                         let threadsPerGrid = MTLSizeMake(N, N, 1)
                         
                         let width = updatePipeline.threadExecutionWidth
@@ -294,9 +310,11 @@ class Renderer {
                     let p1 = inputTexture!.params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
                     p1[0].windDirection = simd_float2(cos(Settings.shared.windDirection / 180 * Float.pi), sin(Settings.shared.windDirection / 360 * Float.pi))
                     p1[0].windSpeed = Settings.shared.windspeed
+                    p1[0].windDirectionalFactor = Settings.shared.windDirectionalFactor
                     p1[0].L = Settings.shared.L
                     p1[0].A = Settings.shared.A
                     p1[0].l = Settings.shared.l
+                    p1[0].xzDisplacement = Settings.shared.xzDisplacement
                     
                     computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
 
@@ -310,6 +328,8 @@ class Renderer {
                     computeEncoder.setTexture(inputTexture?.noiseTexture4, index: 3)
 
                     computeEncoder.setTexture(h0ktTexture[pingpong], index: 4)
+                    computeEncoder.setTexture(displacementX[displacementXpingpong], index: 5)
+                    computeEncoder.setTexture(displacementY[displacementYpingpong], index: 6)
 
 //                    computeEncoder.setTexture(inputTexture?.h0ktexture, index: 0)
 //                    computeEncoder.setTexture(h0ktTexture[0], index: 1)
@@ -326,6 +346,12 @@ class Renderer {
                     // Perform inverse FFT
                     pingpong = fft!.inverseHorizontalFFT(computeEncoder: computeEncoder, data: h0ktTexture, startingBuffer: 0)
                     pingpong = fft!.inverseVerticalFFT(computeEncoder: computeEncoder, data: h0ktTexture, startingBuffer: pingpong)
+
+                    displacementXpingpong = fft!.inverseHorizontalFFT(computeEncoder: computeEncoder, data: displacementX, startingBuffer: 0)
+                    displacementXpingpong = fft!.inverseVerticalFFT(computeEncoder: computeEncoder, data: displacementX, startingBuffer: displacementXpingpong)
+
+                    displacementYpingpong = fft!.inverseHorizontalFFT(computeEncoder: computeEncoder, data: displacementY, startingBuffer: 0)
+                    displacementYpingpong = fft!.inverseVerticalFFT(computeEncoder: computeEncoder, data: displacementY, startingBuffer: displacementYpingpong)
                 }
                 
                 computeEncoder.endEncoding()
@@ -404,6 +430,8 @@ class Renderer {
 //                    }
                     
                     renderEncoder.setVertexTexture(h0ktTexture[pingpong], index: 3)
+                    renderEncoder.setVertexTexture(displacementX[displacementXpingpong], index: 4)
+                    renderEncoder.setVertexTexture(displacementY[displacementYpingpong], index: 5)
 
                     var color = simd_float4(0, 0, 0, 1)
 

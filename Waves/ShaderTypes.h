@@ -34,8 +34,10 @@ struct FrameConstants {
 };
 
 struct Params {
+    bool xzDisplacement;
     vector_float2 windDirection;
     float windSpeed;
+    float windDirectionalFactor;
     int L;
     float A;
     float l;

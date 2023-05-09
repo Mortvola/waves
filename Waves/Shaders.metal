@@ -51,7 +51,9 @@ vertex VertexOut vertexWaveShader(
                                   VertexIn in [[ stage_in ]],
                                   const device FrameConstants& frameConstants [[ buffer(BufferIndexFrameConstants) ]],
                                   uint vertexId [[ vertex_id ]],
-                                  texture2d<float, access::read> height [[ texture(3) ]]
+                                  texture2d<float, access::read> height [[ texture(3) ]],
+                                  texture2d<float, access::read> displacementX [[ texture(4) ]],
+                                  texture2d<float, access::read> displacementZ [[ texture(5) ]]
                                   )
 {
     VertexOut out;
@@ -60,8 +62,18 @@ vertex VertexOut vertexWaveShader(
     int y = vertexId / height.get_width();
     
     float4 h = height.read(uint2(x, y));
+    float4 dispX = displacementX.read(uint2(x, y));
+    float4 dispZ = displacementZ.read(uint2(x, y));
+
+    float lambda = -1;
     
-    out.position = frameConstants.projectionMatrix * frameConstants.viewMatrix * float4(in.position.x, in.position.y + h.x, in.position.z, 1.0);
+    float4 p = float4(
+                      in.position.x + dispX.r * lambda,
+                      in.position.y + h.x,
+                      in.position.z + dispZ.r * lambda,
+                      1.0);
+    
+    out.position = frameConstants.projectionMatrix * frameConstants.viewMatrix * p;
     out.texcoord = in.texcoord;
 //    out.id = id;
 
@@ -242,7 +254,7 @@ float2 h(
         phk = (params.A
             * exp(-1 / (kLength * kLength * L2 * L2))
             / pow(kLength, 4))
-            * pow(kdotw, 8)
+            * pow(kdotw, params.windDirectionalFactor)
             * exp(-kLength * kLength * damping * damping);
         
         h0k2 = sqrt(phk / 2.0) * noise2;
@@ -284,12 +296,12 @@ kernel void naiveHeightCompute(
             float n3 = noise3.read(uint2(m + (N/2), n + (N/2))).r;
             float n4 = noise4.read(uint2(m + (N/2), n + (N/2))).r;
              
-            float2 noise1 = float2(n1, n2);
-            float2 noise2 = float2(n3, n4);
+            float2 ns1 = float2(n1, n2);
+            float2 ns2 = float2(n3, n4);
              
             float2 k = float2((M_PI_F * 2 * m) / params.L, (M_PI_F * 2 * n) / params.L);
              
-            float2 v = h(k, t, params, noise1, noise2);
+            float2 v = h(k, t, params, ns1, ns2);
              
             float theta = (k.x * x * params.L) / N;
             v = ComplexMultiply(v, float2(cos(theta), sin(theta)));
