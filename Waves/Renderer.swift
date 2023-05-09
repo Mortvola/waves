@@ -28,20 +28,15 @@ class Renderer {
     
     private var sampler: MTLSamplerState? = nil
     
-    private var rectangle1: Rectangle? = nil
-    private var rectangle2: Rectangle? = nil
-    private var rectangle3: Rectangle? = nil
+//    private var rectangle1: Rectangle? = nil
+//    private var rectangle2: Rectangle? = nil
+//    private var rectangle3: Rectangle? = nil
 
     private var previousFrameTime: Double?
     
-    private var h0ktTexture: [MTLTexture] = []
-    private var pingpong = 0
-
-    private var displacementX: [MTLTexture] = []
-    private var displacementXpingpong = 0
-
-    private var displacementY: [MTLTexture] = []
-    private var displacementYpingpong = 0
+    private var h0ktTexture: FFTTexture?
+    private var displacementX: FFTTexture?
+    private var displacementY: FFTTexture?
 
     private var updatePipeline: MTLComputePipelineState? = nil
 
@@ -57,7 +52,7 @@ class Renderer {
 //    private var test: TestFFT? = nil
 //    private var tested = false
     
-    private var fft: Fourier? = nil
+//    private var fft: Fourier? = nil
     
     private var useNaivePipeline = false
     private var naivePipeline: MTLComputePipelineState? = nil
@@ -70,7 +65,7 @@ class Renderer {
             
             self.commandQueue = queue
             
-            self.fft = try Fourier(M: N, N: N, commandQueue: commandQueue!)
+//            self.fft = try Fourier(M: N, N: N, commandQueue: commandQueue!)
             
 //            self.pipelineState = try makePipeline()
             self.wavePipelineState = try makeWavePipeline()
@@ -79,21 +74,16 @@ class Renderer {
             
             inputTexture = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: Settings.shared.windDirection, windSpeed: Settings.shared.windspeed)
             
-            self.rectangle1 = Rectangle(texture: inputTexture!.h0ktexture!, size: Float(N), offset: simd_float2(-Float(N), 0))
-            self.rectangle2 = Rectangle(texture: inputTexture!.h0ktexture!, size: Float(N), offset: simd_float2(0, 0))
+//            self.rectangle1 = Rectangle(texture: inputTexture!.h0ktexture!, size: Float(N), offset: simd_float2(-Float(N), 0))
+//            self.rectangle2 = Rectangle(texture: inputTexture!.h0ktexture!, size: Float(N), offset: simd_float2(0, 0))
             
             let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rg32Float, width: N, height: N, mipmapped: false);
             textureDescr.usage = [.shaderWrite, .shaderRead]
             
-            h0ktTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
-            h0ktTexture.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
-
-            displacementX.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
-            displacementX.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
-
-            displacementY.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
-            displacementY.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
-
+            h0ktTexture = try FFTTexture(N: N, commandQueue: commandQueue!)
+            displacementX = try FFTTexture(N: N, commandQueue: commandQueue!)
+            displacementY = try FFTTexture(N: N, commandQueue: commandQueue!)
+            
             let library = MetalView.shared.device.makeDefaultLibrary()
             
             guard let function = library?.makeFunction(name: "makeTimeTexture2") else {
@@ -104,7 +94,7 @@ class Renderer {
             
 //            params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Float>.size)!
             
-            self.rectangle3 = Rectangle(texture: h0ktTexture[0], size: Float(N), offset: simd_float2(-Float(N), -Float(N)));
+//            self.rectangle3 = Rectangle(texture: h0ktTexture!.texture[0], size: Float(N), offset: simd_float2(-Float(N), -Float(N)));
             
             wave = try allocatePlane(dimensions: simd_float2(Float(N * 2), Float(N * 2)), segments: simd_uint2(UInt32(N - 1), UInt32(N - 1)))
             
@@ -288,9 +278,9 @@ class Renderer {
                         computeEncoder.setTexture(inputTexture?.noiseTexture4, index: 3)
 //                        computeEncoder.setTexture(inputTexture?.h0ktexture, index: 3)
                         
-                        computeEncoder.setTexture(h0ktTexture[pingpong], index: 4)
-                        computeEncoder.setTexture(displacementX[displacementXpingpong], index: 5)
-                        computeEncoder.setTexture(displacementY[displacementYpingpong], index: 6)
+                        computeEncoder.setTexture(h0ktTexture!.texture, index: 4)
+                        computeEncoder.setTexture(displacementX!.texture, index: 5)
+                        computeEncoder.setTexture(displacementY!.texture, index: 6)
 
                         let threadsPerGrid = MTLSizeMake(N, N, 1)
                         
@@ -327,13 +317,10 @@ class Renderer {
                     computeEncoder.setTexture(inputTexture?.noiseTexture3, index: 2)
                     computeEncoder.setTexture(inputTexture?.noiseTexture4, index: 3)
 
-                    computeEncoder.setTexture(h0ktTexture[pingpong], index: 4)
-                    computeEncoder.setTexture(displacementX[displacementXpingpong], index: 5)
-                    computeEncoder.setTexture(displacementY[displacementYpingpong], index: 6)
+                    computeEncoder.setTexture(h0ktTexture!.texture, index: 4)
+                    computeEncoder.setTexture(displacementX!.texture, index: 5)
+                    computeEncoder.setTexture(displacementY!.texture, index: 6)
 
-//                    computeEncoder.setTexture(inputTexture?.h0ktexture, index: 0)
-//                    computeEncoder.setTexture(h0ktTexture[0], index: 1)
-                    
                     let threadsPerGrid = MTLSizeMake(N, N, 1)
                     
                     let width = updatePipeline.threadExecutionWidth
@@ -343,15 +330,10 @@ class Renderer {
                     
                     computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
                     
-                    // Perform inverse FFT
-                    pingpong = fft!.inverseHorizontalFFT(computeEncoder: computeEncoder, data: h0ktTexture, startingBuffer: 0)
-                    pingpong = fft!.inverseVerticalFFT(computeEncoder: computeEncoder, data: h0ktTexture, startingBuffer: pingpong)
-
-                    displacementXpingpong = fft!.inverseHorizontalFFT(computeEncoder: computeEncoder, data: displacementX, startingBuffer: 0)
-                    displacementXpingpong = fft!.inverseVerticalFFT(computeEncoder: computeEncoder, data: displacementX, startingBuffer: displacementXpingpong)
-
-                    displacementYpingpong = fft!.inverseHorizontalFFT(computeEncoder: computeEncoder, data: displacementY, startingBuffer: 0)
-                    displacementYpingpong = fft!.inverseVerticalFFT(computeEncoder: computeEncoder, data: displacementY, startingBuffer: displacementYpingpong)
+                    // Perform the FFT transform
+                    h0ktTexture!.transform(computeEncoder: computeEncoder)
+                    displacementX!.transform(computeEncoder: computeEncoder)
+                    displacementY!.transform(computeEncoder: computeEncoder)
                 }
                 
                 computeEncoder.endEncoding()
@@ -429,9 +411,9 @@ class Renderer {
 //                        renderEncoder.setTriangleFillMode(.lines)
 //                    }
                     
-                    renderEncoder.setVertexTexture(h0ktTexture[pingpong], index: 3)
-                    renderEncoder.setVertexTexture(displacementX[displacementXpingpong], index: 4)
-                    renderEncoder.setVertexTexture(displacementY[displacementYpingpong], index: 5)
+                    renderEncoder.setVertexTexture(h0ktTexture!.texture, index: 3)
+                    renderEncoder.setVertexTexture(displacementX!.texture, index: 4)
+                    renderEncoder.setVertexTexture(displacementY!.texture, index: 5)
 
                     var color = simd_float4(0, 0, 0, 1)
 
