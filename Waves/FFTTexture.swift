@@ -128,9 +128,6 @@ class FFTTexture {
         
         let threadsPerGroup = MTLSizeMake(width, height, 1)
 
-        var multiplier = 1.0 / Float(N)
-
-        computeEncoder.setBytes(&multiplier, length: MemoryLayout<Float>.size, index: 0)
         computeEncoder.setTexture(texture, index: 0)
 
         computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)

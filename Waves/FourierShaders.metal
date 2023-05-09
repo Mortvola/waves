@@ -139,7 +139,6 @@ kernel void inverseVertFFTStage(
 }
 
 kernel void fftPostProcess(
-                             const device float &multiplier [[ buffer(0) ]],
                              texture2d<float, access::read_write> input [[ texture(0) ]],
                              uint2 tpig [[ thread_position_in_grid ]]
                              )
@@ -150,8 +149,6 @@ kernel void fftPostProcess(
         height = -height;
     }
 
-//    float2 result = ComplexMultiply(value.rg, float2(multiplier, 0));
-    
     input.write(float4(height.rg, 0, 1), tpig);
 }
 
