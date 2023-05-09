@@ -28,8 +28,6 @@ class Renderer {
     
     private var sampler: MTLSamplerState? = nil
     
-    private var previousFrameTime: Double?
-    
     private var h0ktTexture: FFTTexture?
     private var displacementX: FFTTexture?
     private var displacementY: FFTTexture?
@@ -132,32 +130,6 @@ class Renderer {
         return mtlVertexDescriptor
     }
 
-    func makePipeline() throws -> MTLRenderPipelineState {
-        let vertexDescriptor = buildVertexDescriptor();
-        
-        let library = MetalView.shared.device.makeDefaultLibrary()
-        
-        let vertexFunction = library?.makeFunction(name: "vertexShader")
-        let fragmentFunction = library?.makeFunction(name: "fragmentShader")
-        
-        if vertexFunction == nil || fragmentFunction == nil {
-            throw Errors.makeFunctionError
-        }
-
-        let descr = MTLRenderPipelineDescriptor()
-        descr.label = "Main"
-        descr.rasterSampleCount = MetalView.shared.view!.sampleCount
-        descr.vertexFunction = vertexFunction
-        descr.fragmentFunction = fragmentFunction
-        descr.vertexDescriptor = vertexDescriptor
-        
-        descr.colorAttachments[0].pixelFormat = MetalView.shared.view!.colorPixelFormat
-        descr.depthAttachmentPixelFormat = MetalView.shared.view!.depthStencilPixelFormat
-        descr.stencilAttachmentPixelFormat = MTLPixelFormat.invalid
-                
-        return try MetalView.shared.device.makeRenderPipelineState(descriptor: descr)
-    }
-
     func makeWavePipeline() throws -> MTLRenderPipelineState {
         let vertexDescriptor = buildVertexDescriptor();
         
@@ -198,22 +170,6 @@ class Renderer {
 
     func getTime() -> Double {
         return ProcessInfo.processInfo.systemUptime
-    }
-    
-    func getElapsedTime() -> Double? {
-        let now = ProcessInfo.processInfo.systemUptime
-
-        defer {
-            previousFrameTime = now
-        }
-        
-        if let previousFrameTime = previousFrameTime {
-            let elapsedTime = now - previousFrameTime
-            
-            return elapsedTime
-        }
-        
-        return nil
     }
     
     func updateTexture(commandQueue: MTLCommandQueue) {
@@ -462,20 +418,6 @@ func vertexDescriptor() -> MDLVertexDescriptor {
     vertexAttributes.bufferIndex = 1
     
     vertexDescriptor.attributes[1] = vertexAttributes
-
-//    vertexAttributes = MDLVertexAttribute()
-//    vertexAttributes.name = MDLVertexAttributeNormal
-//    vertexAttributes.format = .float3
-//    vertexAttributes.offset = 0
-//    vertexAttributes.bufferIndex = BufferIndex.normals.rawValue
-//    vertexDescriptor.attributes[VertexAttribute.normal.rawValue] = vertexAttributes
-//
-//    vertexAttributes = MDLVertexAttribute()
-//    vertexAttributes.name = MDLVertexAttributeTangent
-//    vertexAttributes.format = .float3
-//    vertexAttributes.offset = MemoryLayout<simd_float3>.stride
-//    vertexAttributes.bufferIndex = BufferIndex.normals.rawValue
-//    vertexDescriptor.attributes[VertexAttribute.tangent.rawValue] = vertexAttributes
 
     var vertexBufferLayout = MDLVertexBufferLayout()
     vertexBufferLayout.stride = MemoryLayout<simd_float3>.stride
