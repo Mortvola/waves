@@ -26,16 +26,16 @@ class TestFFT {
     }
     
     func run(computeEncoder: MTLComputeCommandEncoder) {
-        
-        do {
-            testTexture[0] = try makeTexture()
-            testTexture[1] = try makeTexture()
-        }
-        catch {}
-        
-        let pingpong = fft.horizontalFFT(computeEncoder: computeEncoder, data: testTexture, startingBuffer: 0)
-        
-        _ = fft.inverseHorizontalFFT(computeEncoder: computeEncoder, data: testTexture, startingBuffer: pingpong)
+//        
+//        do {
+//            testTexture[0] = try makeTexture()
+//            testTexture[1] = try makeTexture()
+//        }
+//        catch {}
+//        
+//        let pingpong = fft.horizontalFFT(computeEncoder: computeEncoder, data: testTexture, startingBuffer: 0)
+//        
+//        _ = fft.inverseHorizontalFFT(computeEncoder: computeEncoder, data: testTexture, startingBuffer: pingpong)
     }
     
     func makeTexture() throws -> MTLTexture {
