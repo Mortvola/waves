@@ -170,7 +170,9 @@ kernel void makeTimeTexture2(
                             texture2d<float, access::read> noise4 [[ texture(3) ]],
                             texture2d<float, access::write> height [[ texture(4) ]],
                             texture2d<float, access::write> dx [[ texture(5) ]],
-                            texture2d<float, access::write> dy [[ texture(6) ]],
+                            texture2d<float, access::write> dz [[ texture(6) ]],
+                            texture2d<float, access::write> slopeX [[ texture(7) ]],
+                            texture2d<float, access::write> slopeZ [[ texture(8) ]],
                             uint2 tpig [[ thread_position_in_grid ]]
                             )
 {
@@ -199,7 +201,7 @@ kernel void makeTimeTexture2(
     float kLength = length(k);
     
     float2 dispX = 0;
-    float2 dispY = 0;
+    float2 dispZ = 0;
 
     if (params.xzDisplacement) {
         if (kLength != 0) {
@@ -207,12 +209,18 @@ kernel void makeTimeTexture2(
         }
         
         if (kLength != 0) {
-            dispY = ComplexMultiply(v, float2(0, -k.y / kLength));
+            dispZ = ComplexMultiply(v, float2(0, -k.y / kLength));
         }
     }
 
     dx.write(float4(dispX.x, dispX.y, 0, 1), tpig);
-    dy.write(float4(dispY.x, dispY.y, 0, 1), tpig);
+    dz.write(float4(dispZ.x, dispZ.y, 0, 1), tpig);
+    
+    float2 nX = ComplexMultiply(v, float2(0, k.x));
+    float2 nZ = ComplexMultiply(v, float2(0, k.y));
+    
+    slopeX.write(float4(nX.x, nX.y, 0, 1), tpig);
+    slopeZ.write(float4(nZ.x, nZ.y, 0, 1), tpig);
 }
 
 kernel void horizontalFFTStage(

@@ -30,7 +30,9 @@ class Renderer {
     
     private var h0ktTexture: FFTTexture?
     private var displacementX: FFTTexture?
-    private var displacementY: FFTTexture?
+    private var displacementZ: FFTTexture?
+    private var slopeX: FFTTexture?
+    private var slopeZ: FFTTexture?
 
     private var updatePipeline: MTLComputePipelineState? = nil
 
@@ -64,8 +66,10 @@ class Renderer {
             
             h0ktTexture = try FFTTexture(N: N, commandQueue: commandQueue!)
             displacementX = try FFTTexture(N: N, commandQueue: commandQueue!)
-            displacementY = try FFTTexture(N: N, commandQueue: commandQueue!)
-            
+            displacementZ = try FFTTexture(N: N, commandQueue: commandQueue!)
+            slopeX = try FFTTexture(N: N, commandQueue: commandQueue!)
+            slopeZ = try FFTTexture(N: N, commandQueue: commandQueue!)
+
             let library = MetalView.shared.device.makeDefaultLibrary()
             
             guard let function = library?.makeFunction(name: "makeTimeTexture2") else {
@@ -208,7 +212,9 @@ class Renderer {
                         
                         computeEncoder.setTexture(h0ktTexture!.texture, index: 4)
                         computeEncoder.setTexture(displacementX!.texture, index: 5)
-                        computeEncoder.setTexture(displacementY!.texture, index: 6)
+                        computeEncoder.setTexture(displacementZ!.texture, index: 6)
+                        computeEncoder.setTexture(slopeX!.texture, index: 7)
+                        computeEncoder.setTexture(slopeZ!.texture, index: 8)
 
                         let threadsPerGrid = MTLSizeMake(N, N, 1)
                         
@@ -246,7 +252,9 @@ class Renderer {
 
                     computeEncoder.setTexture(h0ktTexture!.texture, index: 4)
                     computeEncoder.setTexture(displacementX!.texture, index: 5)
-                    computeEncoder.setTexture(displacementY!.texture, index: 6)
+                    computeEncoder.setTexture(displacementZ!.texture, index: 6)
+                    computeEncoder.setTexture(slopeX!.texture, index: 7)
+                    computeEncoder.setTexture(slopeZ!.texture, index: 8)
 
                     let threadsPerGrid = MTLSizeMake(N, N, 1)
                     
@@ -260,7 +268,9 @@ class Renderer {
                     // Perform the FFT transform
                     h0ktTexture!.transform(computeEncoder: computeEncoder)
                     displacementX!.transform(computeEncoder: computeEncoder)
-                    displacementY!.transform(computeEncoder: computeEncoder)
+                    displacementZ!.transform(computeEncoder: computeEncoder)
+                    slopeX!.transform(computeEncoder: computeEncoder)
+                    slopeZ!.transform(computeEncoder: computeEncoder)
                 }
                 
                 computeEncoder.endEncoding()
@@ -330,10 +340,12 @@ class Renderer {
                     
                     renderEncoder.setVertexTexture(h0ktTexture!.texture, index: 3)
                     renderEncoder.setVertexTexture(displacementX!.texture, index: 4)
-                    renderEncoder.setVertexTexture(displacementY!.texture, index: 5)
+                    renderEncoder.setVertexTexture(displacementZ!.texture, index: 5)
+                    renderEncoder.setVertexTexture(slopeX!.texture, index: 6)
+                    renderEncoder.setVertexTexture(slopeZ!.texture, index: 7)
 
-                    var color = simd_float4(0, 0, 0, 1)
-
+//                    var color = simd_float4(6.0 / 255.0, 66.0 / 255.0, 115.0 / 255.0, 1)
+                    var color = simd_float4(0.18, 0.38, 0.42, 1)
                     renderEncoder.setFragmentBytes(&color, length: MemoryLayout<simd_float4>.size, index: 0)
 
                     // Pass the vertex and index information to the vertex shader

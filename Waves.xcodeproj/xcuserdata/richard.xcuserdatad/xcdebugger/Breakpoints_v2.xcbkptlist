@@ -3,4 +3,54 @@
    uuid = "255EDDF6-0482-40D2-9E40-04D5F6F095EA"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CAC5754F-4573-45AA-A6A7-BE8D7B7DE347"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Waves/Renderer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "331"
+            endingLineNumber = "331"
+            landmarkName = "render(in:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "CAC5754F-4573-45AA-A6A7-BE8D7B7DE347 - cedff35b673dc2f8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.render(in: __C.MTKView) throws -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "331"
+                  endingLineNumber = "331"
+                  offsetFromSymbolStart = "1128">
+               </Location>
+               <Location
+                  uuid = "CAC5754F-4573-45AA-A6A7-BE8D7B7DE347 - cedff35b673dc2f8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Waves.Renderer.render(in: __C.MTKView) throws -&gt; ()"
+                  moduleName = "Waves"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "331"
+                  endingLineNumber = "331"
+                  offsetFromSymbolStart = "1196">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

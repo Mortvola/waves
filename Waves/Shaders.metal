@@ -20,6 +20,7 @@ struct VertexOut {
     float4 position [[ position ]];
     float2 texcoord;
     uint id;
+    float3 normal;
 };
 
 vertex VertexOut vertexShader(
@@ -53,7 +54,9 @@ vertex VertexOut vertexWaveShader(
                                   uint vertexId [[ vertex_id ]],
                                   texture2d<float, access::read> height [[ texture(3) ]],
                                   texture2d<float, access::read> displacementX [[ texture(4) ]],
-                                  texture2d<float, access::read> displacementZ [[ texture(5) ]]
+                                  texture2d<float, access::read> displacementZ [[ texture(5) ]],
+                                  texture2d<float, access::read> slopeX [[ texture(6) ]],
+                                  texture2d<float, access::read> slopeZ [[ texture(7) ]]
                                   )
 {
     VertexOut out;
@@ -64,6 +67,8 @@ vertex VertexOut vertexWaveShader(
     float4 h = height.read(uint2(x, y));
     float4 dispX = displacementX.read(uint2(x, y));
     float4 dispZ = displacementZ.read(uint2(x, y));
+    float4 sX = slopeX.read(uint2(x, y));
+    float4 sZ = slopeZ.read(uint2(x, y));
 
     float lambda = -1;
     
@@ -75,8 +80,9 @@ vertex VertexOut vertexWaveShader(
     
     out.position = frameConstants.projectionMatrix * frameConstants.viewMatrix * p;
     out.texcoord = in.texcoord;
-//    out.id = id;
 
+    out.normal = normalize(float3(0 - sX.r, 1, 0 - sZ.r));
+    
     return out;
 }
 
@@ -85,7 +91,23 @@ fragment float4 fragmentWaterShader(
                                     const device float4 &color [[ buffer(0) ]]
                                     )
 {
-    return color;
+    float3 light = normalize(float3(0, 1, -1));
+    
+    float d = dot(light, in.normal);
+    
+    float3 c = pow(color.rgb, float3(2.2));
+
+    c = c * d;
+    
+    // HDR tonemapping
+//    c = c / (c + float3(1.0));
+    float exposure = 5.0;
+    c = float3(1.0) - exp(-c * exposure);
+
+    // gamma correct
+//    c = pow(c, float3(1.0 / 2.2));
+
+    return float4(c.rgb, 1);
 }
 
 kernel void makeInputTexture(
