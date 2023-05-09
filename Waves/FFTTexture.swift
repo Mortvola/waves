@@ -19,7 +19,6 @@ class FFTTexture {
     private var fftPostProcessPipeline: MTLComputePipelineState
 
     //    private var butterflyTexture: MTLTexture
-    //    private var inverseButterflyTexture: MTLTexture
                 
     init(N: Int, commandQueue: MTLCommandQueue) throws {
         self.N = N
@@ -38,17 +37,16 @@ class FFTTexture {
 
         verticalFFTPipeline = try MetalView.shared.device.makeComputePipelineState(function: vertFunction)
 
-        guard let inverseFFTDivide = library?.makeFunction(name: "inverseFFTDivide") else {
+        guard let fftPostProcess = library?.makeFunction(name: "fftPostProcess") else {
             throw Errors.makeFunctionError
         }
         
-        fftPostProcessPipeline = try MetalView.shared.device.makeComputePipelineState(function: inverseFFTDivide)
+        fftPostProcessPipeline = try MetalView.shared.device.makeComputePipelineState(function: fftPostProcess)
 
         let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rg32Float, width: N, height: N, mipmapped: false);
         textureDescr.usage = [.shaderWrite, .shaderRead]
         
         //        butterflyTexture = try makeButterflyTexture(N: N, inverse: false, commandQueue: commandQueue)
-        //        inverseButterflyTexture = try makeButterflyTexture(N: N, inverse: true, commandQueue: commandQueue)
 
         textures.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
         textures.append(MetalView.shared.device.makeTexture(descriptor: textureDescr)!)
@@ -61,6 +59,8 @@ class FFTTexture {
     func transform(computeEncoder: MTLComputeCommandEncoder) {
         pingpong = horizontalFFT(computeEncoder: computeEncoder, data: textures, startingBuffer: 0)
         pingpong = verticalFFT(computeEncoder: computeEncoder, data: textures, startingBuffer: pingpong)
+        
+        fftPostProcess(computeEncoder: computeEncoder, data: texture)
     }
     
     private func horizontalFFT(computeEncoder: MTLComputeCommandEncoder, data: [MTLTexture], startingBuffer: Int) -> Int {
@@ -91,8 +91,6 @@ class FFTTexture {
             
             pingpong ^= 1
         }
-        
-//        inverseFFTDivide(computeEncoder: computeEncoder, data: data[pingpong])
         
         return pingpong
     }
@@ -125,12 +123,10 @@ class FFTTexture {
             pingpong ^= 1
         }
 
-        inverseFFTDivide(computeEncoder: computeEncoder, data: data[pingpong])
-        
         return pingpong
     }
     
-    private func inverseFFTDivide(computeEncoder: MTLComputeCommandEncoder, data: MTLTexture) {
+    private func fftPostProcess(computeEncoder: MTLComputeCommandEncoder, data: MTLTexture) {
         computeEncoder.setComputePipelineState(fftPostProcessPipeline)
 
         let threadsPerGrid = MTLSizeMake(N, N, 1)

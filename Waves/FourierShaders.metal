@@ -138,7 +138,7 @@ kernel void inverseVertFFTStage(
     output.write(float4(c1.x, c1.y, 0, 1), tpig);
 }
 
-kernel void inverseFFTDivide(
+kernel void fftPostProcess(
                              const device float &multiplier [[ buffer(0) ]],
                              texture2d<float, access::read_write> input [[ texture(0) ]],
                              uint2 tpig [[ thread_position_in_grid ]]
