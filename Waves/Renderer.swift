@@ -28,10 +28,6 @@ class Renderer {
     
     private var sampler: MTLSamplerState? = nil
     
-//    private var rectangle1: Rectangle? = nil
-//    private var rectangle2: Rectangle? = nil
-//    private var rectangle3: Rectangle? = nil
-
     private var previousFrameTime: Double?
     
     private var h0ktTexture: FFTTexture?
@@ -40,7 +36,6 @@ class Renderer {
 
     private var updatePipeline: MTLComputePipelineState? = nil
 
-//    private var params: MTLBuffer? = nil
     private var frameConstants: MTLBuffer? = nil
     
     private var inputTexture: InputTexture? = nil
@@ -48,11 +43,6 @@ class Renderer {
     private var wave: MTKMesh? = nil
     
     private var camera: Camera = Camera()
-    
-//    private var test: TestFFT? = nil
-//    private var tested = false
-    
-//    private var fft: Fourier? = nil
     
     private var useNaivePipeline = false
     private var naivePipeline: MTLComputePipelineState? = nil
@@ -65,17 +55,11 @@ class Renderer {
             
             self.commandQueue = queue
             
-//            self.fft = try Fourier(M: N, N: N, commandQueue: commandQueue!)
-            
-//            self.pipelineState = try makePipeline()
             self.wavePipelineState = try makeWavePipeline()
             
             self.sampler = try makeSampler()
             
             inputTexture = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: Settings.shared.windDirection, windSpeed: Settings.shared.windspeed)
-            
-//            self.rectangle1 = Rectangle(texture: inputTexture!.h0ktexture!, size: Float(N), offset: simd_float2(-Float(N), 0))
-//            self.rectangle2 = Rectangle(texture: inputTexture!.h0ktexture!, size: Float(N), offset: simd_float2(0, 0))
             
             let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rg32Float, width: N, height: N, mipmapped: false);
             textureDescr.usage = [.shaderWrite, .shaderRead]
@@ -92,10 +76,6 @@ class Renderer {
             
             updatePipeline = try MetalView.shared.device.makeComputePipelineState(function: function)
             
-//            params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Float>.size)!
-            
-//            self.rectangle3 = Rectangle(texture: h0ktTexture!.texture[0], size: Float(N), offset: simd_float2(-Float(N), -Float(N)));
-            
             wave = try allocatePlane(dimensions: simd_float2(Float(N * 2), Float(N * 2)), segments: simd_uint2(UInt32(N - 1), UInt32(N - 1)))
             
             frameConstants = MetalView.shared.device.makeBuffer(length: MemoryLayout<FrameConstants>.size)!
@@ -104,8 +84,6 @@ class Renderer {
             camera.cameraOffset.z = -250
             
             camera.updateLookAt(yawChange: 0, pitchChange: 25)
-            
-//            test = try TestFFT(N: 8, commandQueue: commandQueue!)
             
             makeNaivePipeline(commandQueue: commandQueue!, windDirection: Settings.shared.windspeed, windSpeed: Settings.shared.windspeed)
             
@@ -265,18 +243,12 @@ class Renderer {
 
                         computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
                         
-//                        let time = params!.contents().bindMemory(to: Float.self, capacity: MemoryLayout<Float>.size)
-//                        //                    p[0] = Float(getTime())
-//                        time[0] = Settings.shared.time
-//
-//                        computeEncoder.setBuffer(params, offset: 0, index: 1)
                         computeEncoder.setBytes(&Settings.shared.time, length: MemoryLayout<Float>.size, index: 1)
                         
                         computeEncoder.setTexture(inputTexture?.noiseTexture1, index: 0)
                         computeEncoder.setTexture(inputTexture?.noiseTexture2, index: 1)
                         computeEncoder.setTexture(inputTexture?.noiseTexture3, index: 2)
                         computeEncoder.setTexture(inputTexture?.noiseTexture4, index: 3)
-//                        computeEncoder.setTexture(inputTexture?.h0ktexture, index: 3)
                         
                         computeEncoder.setTexture(h0ktTexture!.texture, index: 4)
                         computeEncoder.setTexture(displacementX!.texture, index: 5)
@@ -309,7 +281,6 @@ class Renderer {
                     computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
 
                     var time = Float(getTime())
-//                    computeEncoder.setBytes(&Settings.shared.time, length: MemoryLayout<Float>.size, index: 1)
                     computeEncoder.setBytes(&time, length: MemoryLayout<Float>.size, index: 1)
 
                     computeEncoder.setTexture(inputTexture?.noiseTexture1, index: 0)
@@ -394,22 +365,12 @@ class Renderer {
                 if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
                     // Render stuff...
                     
-//                    renderEncoder.setRenderPipelineState(pipelineState)
-                    
-//                    rectangle1.draw(renderEncoder: renderEncoder, sampler: sampler!)
-//                    rectangle2.draw(renderEncoder: renderEncoder, sampler: sampler!)
-//                    rectangle3.draw(renderEncoder: renderEncoder, sampler: sampler!)
-                    
                     renderEncoder.setRenderPipelineState(wavePipelineState)
                     
                     renderEncoder.setCullMode(.back)
                     renderEncoder.setDepthStencilState(depthState)
 
                     renderEncoder.setVertexBuffer(frameConstants, offset: 0, index: BufferIndex.frameConstants.rawValue)
-                    
-//                    if Settings.shared.wireframe {
-//                        renderEncoder.setTriangleFillMode(.lines)
-//                    }
                     
                     renderEncoder.setVertexTexture(h0ktTexture!.texture, index: 3)
                     renderEncoder.setVertexTexture(displacementX!.texture, index: 4)
@@ -430,19 +391,19 @@ class Renderer {
 
                     if Settings.shared.wireframe {
                         renderEncoder.setTriangleFillMode(.lines)
-                    }
-
-                    color = simd_float4(1, 0, 0, 1)
-                    
-                    renderEncoder.setFragmentBytes(&color, length: MemoryLayout<simd_float4>.size, index: 0)
-                    
-                    // Pass the vertex and index information to the vertex shader
-                    for (i, buffer) in wave!.vertexBuffers.enumerated() {
-                        renderEncoder.setVertexBuffer(buffer.buffer, offset: buffer.offset, index: i)
-                    }
-                    
-                    for submesh in wave!.submeshes {
-                        renderEncoder.drawIndexedPrimitives(type: submesh.primitiveType, indexCount: submesh.indexCount, indexType: submesh.indexType, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: submesh.indexBuffer.offset, instanceCount: 1)
+                        
+                        color = simd_float4(1, 0, 0, 1)
+                        
+                        renderEncoder.setFragmentBytes(&color, length: MemoryLayout<simd_float4>.size, index: 0)
+                        
+                        // Pass the vertex and index information to the vertex shader
+                        for (i, buffer) in wave!.vertexBuffers.enumerated() {
+                            renderEncoder.setVertexBuffer(buffer.buffer, offset: buffer.offset, index: i)
+                        }
+                        
+                        for submesh in wave!.submeshes {
+                            renderEncoder.drawIndexedPrimitives(type: submesh.primitiveType, indexCount: submesh.indexCount, indexType: submesh.indexType, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: submesh.indexBuffer.offset, instanceCount: 1)
+                        }
                     }
 
                     renderEncoder.endEncoding()

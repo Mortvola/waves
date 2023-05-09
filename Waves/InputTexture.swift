@@ -21,7 +21,7 @@ class InputTexture {
     public var noiseTexture4: MTLTexture
     public var params: MTLBuffer
     
-    var h0ktexture: MTLTexture? = nil
+    private var h0ktexture: MTLTexture? = nil
 
     init(commandQueue: MTLCommandQueue, N: Int, windDirection: Float, windSpeed: Float) throws {
         self.N = N

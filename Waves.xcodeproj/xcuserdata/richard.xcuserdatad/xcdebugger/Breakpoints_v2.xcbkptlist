@@ -14,10 +14,10 @@
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "476"
-            endingLineNumber = "476"
-            landmarkName = "allocatePlane(dimensions:segments:)"
-            landmarkType = "9">
+            startingLineNumber = "437"
+            endingLineNumber = "437"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -30,8 +30,8 @@
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "106"
-            endingLineNumber = "106"
+            startingLineNumber = "86"
+            endingLineNumber = "86"
             landmarkName = "initialize()"
             landmarkType = "7">
             <Locations>
@@ -78,8 +78,8 @@
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "350"
-            endingLineNumber = "350"
+            startingLineNumber = "321"
+            endingLineNumber = "321"
             landmarkName = "updateFrameConstants()"
             landmarkType = "7">
             <Locations>
@@ -238,8 +238,8 @@
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "339"
-            endingLineNumber = "339"
+            startingLineNumber = "310"
+            endingLineNumber = "310"
             landmarkName = "updateTexture(commandQueue:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -396,8 +396,8 @@
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "251"
-            endingLineNumber = "251"
+            startingLineNumber = "229"
+            endingLineNumber = "229"
             landmarkName = "updateTexture(commandQueue:)"
             landmarkType = "7">
             <Locations>
