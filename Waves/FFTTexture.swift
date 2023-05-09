@@ -57,13 +57,13 @@ class FFTTexture {
     }
     
     func transform(computeEncoder: MTLComputeCommandEncoder) {
-        pingpong = horizontalFFT(computeEncoder: computeEncoder, data: textures, startingBuffer: 0)
-        pingpong = verticalFFT(computeEncoder: computeEncoder, data: textures, startingBuffer: pingpong)
+        horizontalFFT(computeEncoder: computeEncoder)
+        verticalFFT(computeEncoder: computeEncoder)
         
-        fftPostProcess(computeEncoder: computeEncoder, data: texture)
+        fftPostProcess(computeEncoder: computeEncoder)
     }
     
-    private func horizontalFFT(computeEncoder: MTLComputeCommandEncoder, data: [MTLTexture], startingBuffer: Int) -> Int {
+    private func horizontalFFT(computeEncoder: MTLComputeCommandEncoder) {
         // Perform horizontal inverse FFT
         computeEncoder.setComputePipelineState(horizontalFFTPipeline)
         
@@ -78,11 +78,9 @@ class FFTTexture {
         
         let threadsPerGroup = MTLSizeMake(width, height, 1)
 
-        var pingpong = startingBuffer
-
         for stage in 0..<stages {
-            computeEncoder.setTexture(data[pingpong], index: 0)
-            computeEncoder.setTexture(data[pingpong ^ 1], index: 1)
+            computeEncoder.setTexture(textures[pingpong], index: 0)
+            computeEncoder.setTexture(textures[pingpong ^ 1], index: 1)
             
             var s: InverseFFTParams = InverseFFTParams(stage: Int32(stage), lastStage: Int32(stages - 1))
             
@@ -91,11 +89,9 @@ class FFTTexture {
             
             pingpong ^= 1
         }
-        
-        return pingpong
     }
     
-    private func verticalFFT(computeEncoder: MTLComputeCommandEncoder, data: [MTLTexture], startingBuffer: Int) -> Int {
+    private func verticalFFT(computeEncoder: MTLComputeCommandEncoder) {
         computeEncoder.setComputePipelineState(verticalFFTPipeline)
 
 //        computeEncoder.setTexture(inverseButterflyTexture, index: 2)
@@ -109,11 +105,9 @@ class FFTTexture {
         
         let threadsPerGroup = MTLSizeMake(width, height, 1)
 
-        var pingpong = startingBuffer
-
         for stage in 0..<stages {
-            computeEncoder.setTexture(data[pingpong], index: 0)
-            computeEncoder.setTexture(data[pingpong ^ 1], index: 1)
+            computeEncoder.setTexture(textures[pingpong], index: 0)
+            computeEncoder.setTexture(textures[pingpong ^ 1], index: 1)
 
             var s: InverseFFTParams = InverseFFTParams(stage: Int32(stage), lastStage: Int32(stages - 1))
 
@@ -122,11 +116,9 @@ class FFTTexture {
             
             pingpong ^= 1
         }
-
-        return pingpong
     }
     
-    private func fftPostProcess(computeEncoder: MTLComputeCommandEncoder, data: MTLTexture) {
+    private func fftPostProcess(computeEncoder: MTLComputeCommandEncoder) {
         computeEncoder.setComputePipelineState(fftPostProcessPipeline)
 
         let threadsPerGrid = MTLSizeMake(N, N, 1)
@@ -139,7 +131,7 @@ class FFTTexture {
         var multiplier = 1.0 / Float(N)
 
         computeEncoder.setBytes(&multiplier, length: MemoryLayout<Float>.size, index: 0)
-        computeEncoder.setTexture(data, index: 0)
+        computeEncoder.setTexture(texture, index: 0)
 
         computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
     }
