@@ -42,13 +42,17 @@ class Renderer {
     
     private var wave: MTKMesh? = nil
     
-    private var camera: Camera = Camera()
+    private var camera: Camera!
+    
+    private var clock = Clock();
     
     private var useNaivePipeline = false
     private var naivePipeline: MTLComputePipelineState? = nil
     
-    func initialize() throws {
+    func initialize(camera: Camera) throws {
         do {
+            self.camera = camera
+            
             guard let queue = MetalView.shared.device.makeCommandQueue() else {
                 throw Errors.makeCommandQueueFailed
             }
@@ -172,8 +176,12 @@ class Renderer {
         return MetalView.shared.device.makeSamplerState(descriptor: samplerDescriptor)!
     }
 
-    func getTime() -> Double {
-        return ProcessInfo.processInfo.systemUptime
+    private func updateState() {
+        /// Update any game state before rendering
+        
+        if let elapsedTime = clock.getElapsedTime() {
+            self.camera.updatePostion(elapsedTime: elapsedTime)
+        }
     }
     
     func updateTexture(commandQueue: MTLCommandQueue) {
@@ -242,7 +250,7 @@ class Renderer {
                     
                     computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
 
-                    var time = Float(getTime())
+                    var time = Float(clock.getTime())
                     computeEncoder.setBytes(&time, length: MemoryLayout<Float>.size, index: 1)
 
                     computeEncoder.setTexture(inputTexture?.noiseTexture1, index: 0)
@@ -283,8 +291,8 @@ class Renderer {
     func updateFrameConstants() {
         let constants = UnsafeMutableRawPointer(frameConstants!.contents()).bindMemory(to: FrameConstants.self, capacity: 1)
 
-        constants[0].projectionMatrix = camera.projectionMatrix
-        constants[0].viewMatrix = camera.getViewMatrix()
+        constants[0].projectionMatrix = camera!.projectionMatrix
+        constants[0].viewMatrix = camera!.getViewMatrix()
     }
     
     func render(in view: MTKView) throws {
@@ -306,7 +314,9 @@ class Renderer {
 //
 //        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
         
-        updateTexture(commandQueue: commandQueue);
+        updateTexture(commandQueue: commandQueue)
+        
+        updateState()
         
         if frameConstants == nil {
             return
@@ -389,13 +399,6 @@ class Renderer {
             
             commandBuffer.commit()
         }
-    }
-
-    public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        MetalView.shared.width = Float(size.width)
-        MetalView.shared.height = Float(size.height)
-
-        camera.updateViewDimensions()
     }
 }
 

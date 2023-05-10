@@ -9,14 +9,23 @@ import Foundation
 import MetalKit
 
 class RenderDelegate: NSObject, MTKViewDelegate {
+    var camera: Camera
+    
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        Renderer.shared.mtkView(view, drawableSizeWillChange: size)
+        MetalView.shared.width = Float(size.width)
+        MetalView.shared.height = Float(size.height)
+
+        camera.updateViewDimensions()
     }
     
-    override init() {
+    init(camera: Camera) {
+        self.camera = camera
+
+        super.init()
+        
         Task {
             do {
-                try Renderer.shared.initialize()
+                try Renderer.shared.initialize(camera: camera)
             }
             catch {
                 print(error)

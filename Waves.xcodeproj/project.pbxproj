@@ -38,6 +38,7 @@
 		79C8C9682A02886000BF851F /* Checkbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C9672A02886000BF851F /* Checkbox.swift */; };
 		79C8C96A2A028A6900BF851F /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C9692A028A6900BF851F /* Settings.swift */; };
 		79C8C96C2A03071D00BF851F /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C96B2A03071D00BF851F /* Fourier.swift */; };
+		79EC456F2A0BBEBE00DD6DE2 /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79EC456E2A0BBEBE00DD6DE2 /* Clock.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +95,7 @@
 		79C8C9672A02886000BF851F /* Checkbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Checkbox.swift; sourceTree = "<group>"; };
 		79C8C9692A028A6900BF851F /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		79C8C96B2A03071D00BF851F /* Fourier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fourier.swift; sourceTree = "<group>"; };
+		79EC456E2A0BBEBE00DD6DE2 /* Clock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +156,7 @@
 				79372A5129FC13FD004FE219 /* MetalView.swift */,
 				79372A4D29FC1263004FE219 /* RenderDelegate.swift */,
 				79372A4F29FC1279004FE219 /* Renderer.swift */,
+				79EC456E2A0BBEBE00DD6DE2 /* Clock.swift */,
 				7954B5692A0A8BB000F83A31 /* FFTTexture.swift */,
 				79C8C9652A01465400BF851F /* Butterfly.swift */,
 				79C8C95D2A00B34400BF851F /* TestFFT.swift */,
@@ -354,6 +357,7 @@
 				79C8C9682A02886000BF851F /* Checkbox.swift in Sources */,
 				79372A5A29FD716E004FE219 /* Rectangle.swift in Sources */,
 				79372A2129FC1130004FE219 /* ContentView.swift in Sources */,
+				79EC456F2A0BBEBE00DD6DE2 /* Clock.swift in Sources */,
 				79372A642A005E9A004FE219 /* Matrix3x3.swift in Sources */,
 				79372A672A005E9A004FE219 /* Vec2.swift in Sources */,
 				79372A1F29FC1130004FE219 /* WavesApp.swift in Sources */,
