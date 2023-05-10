@@ -176,6 +176,15 @@ class Renderer {
         return MetalView.shared.device.makeSamplerState(descriptor: samplerDescriptor)!
     }
 
+    public func setPaused(paused: Bool) {
+        if paused {
+            clock.pause()
+        }
+        else {
+            clock.resume()
+        }
+    }
+    
     private func updateState() {
         /// Update any game state before rendering
         

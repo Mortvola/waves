@@ -200,4 +200,8 @@ class RenderViewController: UIViewController {
             )
         }
     }
+    
+    func setPaused(_ paused: Bool) {
+        renderer.setPaused(paused: paused)
+    }
 }

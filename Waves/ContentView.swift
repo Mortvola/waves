@@ -9,10 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     @ObservedObject var settings = Settings.shared
+    @State var paused = false
     
     var body: some View {
         ZStack {
-            RenderView()
+            RenderView(paused: paused)
             VStack {
                 HStack {
                     Checkbox(checked: $settings.wireframe, label: "Wireframe")
@@ -93,6 +94,15 @@ struct ContentView: View {
                         .accentColor(.white)
                         .padding(.leading)
                         .frame(maxWidth: 300)
+                    Spacer()
+                }
+                HStack {
+                    Button {
+                        paused.toggle()
+                    } label: {
+                        Text(paused ? "Resume" : "Pause")
+                    }
+                    .padding()
                     Spacer()
                 }
                 Spacer()

@@ -12,11 +12,24 @@ class Clock {
 
     private var fixedFrameTime: Double? = nil
     
+    private var time: Double?
+    private var paused = false
+    private var pausedTime: Double = 0.0
+    private var timeOfPause: Double?
+    
     func getTime() -> Double {
-        return ProcessInfo.processInfo.systemUptime
+        if paused {
+            return timeOfPause! - pausedTime
+        }
+        
+        return ProcessInfo.processInfo.systemUptime - pausedTime
     }
 
     func getElapsedTime() -> Double? {
+        if paused {
+            return 0
+        }
+        
         if let fixedFrameTime = self.fixedFrameTime {
             return fixedFrameTime
         }
@@ -34,5 +47,19 @@ class Clock {
         }
         
         return nil
+    }
+    
+    func pause() {
+        if !paused {
+            paused = true
+            timeOfPause = ProcessInfo.processInfo.systemUptime
+        }
+    }
+    
+    func resume() {
+        if paused {
+            pausedTime += ProcessInfo.processInfo.systemUptime - timeOfPause!
+            paused = false
+        }
     }
 }
