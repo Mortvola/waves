@@ -46,12 +46,20 @@ class Renderer {
     
     private var camera: Camera!
     
+    private var lastUpdateTime: Float? = nil
+    
     private var useNaivePipeline = false
     private var naivePipeline: MTLComputePipelineState? = nil
     
     func initialize(camera: Camera) throws {
         do {
             self.camera = camera
+            
+            // When using the naive pipeline, set the clock to paused
+            // because rendering with the naive pipeline is very slow.
+            if self.useNaivePipeline {
+                clock.pause()
+            }
             
             guard let queue = MetalView.shared.device.makeCommandQueue() else {
                 throw Errors.makeCommandQueueFailed
@@ -194,10 +202,12 @@ class Renderer {
 //            inputTexture?.makeTexture(commandQueue: commandQueue, windDirection: Settings.shared.windDirection, windSpeed: Settings.shared.windspeed)
 //        }
 
-        if let commandBuffer = commandQueue.makeCommandBuffer() {
-            if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
-                if let naivePipeline = naivePipeline, useNaivePipeline {
-                    if Settings.shared.step {
+        var time = Float(clock.getTime())
+
+        if time != lastUpdateTime {
+            if let commandBuffer = commandQueue.makeCommandBuffer() {
+                if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
+                    if let naivePipeline = naivePipeline, useNaivePipeline {
                         computeEncoder.setComputePipelineState(naivePipeline)
                         
                         let p1 = inputTexture!.params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
@@ -208,10 +218,11 @@ class Renderer {
                         p1[0].A = Settings.shared.A
                         p1[0].l = Settings.shared.l
                         p1[0].xzDisplacement = Settings.shared.xzDisplacement
-
+                        
                         computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
                         
-                        computeEncoder.setBytes(&Settings.shared.time, length: MemoryLayout<Float>.size, index: 1)
+                        var time = Float(clock.getTime())
+                        computeEncoder.setBytes(&time, length: MemoryLayout<Float>.size, index: 1)
                         
                         computeEncoder.setTexture(inputTexture?.noiseTexture1, index: 0)
                         computeEncoder.setTexture(inputTexture?.noiseTexture2, index: 1)
@@ -223,7 +234,43 @@ class Renderer {
                         computeEncoder.setTexture(displacementZ!.texture, index: 6)
                         computeEncoder.setTexture(slopeX!.texture, index: 7)
                         computeEncoder.setTexture(slopeZ!.texture, index: 8)
-
+                        
+                        let threadsPerGrid = MTLSizeMake(N, N, 1)
+                        
+                        let width = updatePipeline.threadExecutionWidth
+                        let height = updatePipeline.maxTotalThreadsPerThreadgroup / width
+                        
+                        let threadsPerGroup = MTLSizeMake(width, height, 1)
+                        
+                        computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
+                    }
+                    else {
+                        computeEncoder.setComputePipelineState(updatePipeline)
+                        
+                        let p1 = inputTexture!.params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
+                        p1[0].windDirection = simd_float2(cos(Settings.shared.windDirection / 180 * Float.pi), sin(Settings.shared.windDirection / 360 * Float.pi))
+                        p1[0].windSpeed = Settings.shared.windspeed
+                        p1[0].windDirectionalFactor = Settings.shared.windDirectionalFactor
+                        p1[0].L = Settings.shared.L
+                        p1[0].A = Settings.shared.A
+                        p1[0].l = Settings.shared.l
+                        p1[0].xzDisplacement = Settings.shared.xzDisplacement
+                        
+                        computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
+                        
+                        computeEncoder.setBytes(&time, length: MemoryLayout<Float>.size, index: 1)
+                        
+                        computeEncoder.setTexture(inputTexture?.noiseTexture1, index: 0)
+                        computeEncoder.setTexture(inputTexture?.noiseTexture2, index: 1)
+                        computeEncoder.setTexture(inputTexture?.noiseTexture3, index: 2)
+                        computeEncoder.setTexture(inputTexture?.noiseTexture4, index: 3)
+                        
+                        computeEncoder.setTexture(h0ktTexture!.texture, index: 4)
+                        computeEncoder.setTexture(displacementX!.texture, index: 5)
+                        computeEncoder.setTexture(displacementZ!.texture, index: 6)
+                        computeEncoder.setTexture(slopeX!.texture, index: 7)
+                        computeEncoder.setTexture(slopeZ!.texture, index: 8)
+                        
                         let threadsPerGrid = MTLSizeMake(N, N, 1)
                         
                         let width = updatePipeline.threadExecutionWidth
@@ -233,57 +280,20 @@ class Renderer {
                         
                         computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
                         
-                        Settings.shared.step = false
+                        // Perform the FFT transform
+                        h0ktTexture!.transform(computeEncoder: computeEncoder)
+                        displacementX!.transform(computeEncoder: computeEncoder)
+                        displacementZ!.transform(computeEncoder: computeEncoder)
+                        slopeX!.transform(computeEncoder: computeEncoder)
+                        slopeZ!.transform(computeEncoder: computeEncoder)
                     }
+                    
+                    computeEncoder.endEncoding()
+                    
+                    commandBuffer.commit()
+                    
+                    lastUpdateTime = time;
                 }
-                else {
-                    computeEncoder.setComputePipelineState(updatePipeline)
-                    
-                    let p1 = inputTexture!.params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
-                    p1[0].windDirection = simd_float2(cos(Settings.shared.windDirection / 180 * Float.pi), sin(Settings.shared.windDirection / 360 * Float.pi))
-                    p1[0].windSpeed = Settings.shared.windspeed
-                    p1[0].windDirectionalFactor = Settings.shared.windDirectionalFactor
-                    p1[0].L = Settings.shared.L
-                    p1[0].A = Settings.shared.A
-                    p1[0].l = Settings.shared.l
-                    p1[0].xzDisplacement = Settings.shared.xzDisplacement
-                    
-                    computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
-
-                    var time = Float(clock.getTime())
-                    computeEncoder.setBytes(&time, length: MemoryLayout<Float>.size, index: 1)
-
-                    computeEncoder.setTexture(inputTexture?.noiseTexture1, index: 0)
-                    computeEncoder.setTexture(inputTexture?.noiseTexture2, index: 1)
-                    computeEncoder.setTexture(inputTexture?.noiseTexture3, index: 2)
-                    computeEncoder.setTexture(inputTexture?.noiseTexture4, index: 3)
-
-                    computeEncoder.setTexture(h0ktTexture!.texture, index: 4)
-                    computeEncoder.setTexture(displacementX!.texture, index: 5)
-                    computeEncoder.setTexture(displacementZ!.texture, index: 6)
-                    computeEncoder.setTexture(slopeX!.texture, index: 7)
-                    computeEncoder.setTexture(slopeZ!.texture, index: 8)
-
-                    let threadsPerGrid = MTLSizeMake(N, N, 1)
-                    
-                    let width = updatePipeline.threadExecutionWidth
-                    let height = updatePipeline.maxTotalThreadsPerThreadgroup / width
-                    
-                    let threadsPerGroup = MTLSizeMake(width, height, 1)
-                    
-                    computeEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
-                    
-                    // Perform the FFT transform
-                    h0ktTexture!.transform(computeEncoder: computeEncoder)
-                    displacementX!.transform(computeEncoder: computeEncoder)
-                    displacementZ!.transform(computeEncoder: computeEncoder)
-                    slopeX!.transform(computeEncoder: computeEncoder)
-                    slopeZ!.transform(computeEncoder: computeEncoder)
-                }
-                
-                computeEncoder.endEncoding()
-                
-                commandBuffer.commit()
             }
         }
     }

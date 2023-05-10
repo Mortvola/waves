@@ -18,8 +18,4 @@ class Settings: ObservableObject {
     @Published var L: Int32 = 256
     var A: Float = 0.0005
     var l: Float = 0.1
-    
-    var step = true
-    
-    @Published var time: Float = 0
 }

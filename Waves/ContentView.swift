@@ -47,13 +47,11 @@ struct ContentView: View {
                         if settings.windDirection == 360 {
                             settings.windDirection = 0
                         }
-                        settings.step = true
                     } onDecrement: {
                         settings.windDirection -= 1
                         if settings.windDirection == -1 {
                             settings.windDirection = 359
                         }
-                        settings.step = true
                     }
                         .foregroundColor(.white)
                         .accentColor(.white)
@@ -66,11 +64,9 @@ struct ContentView: View {
                         Text("L: \(settings.L)")
                     } onIncrement: {
                         settings.L += 1
-                        settings.step = true
                     } onDecrement: {
                         if settings.L > 1 {
                             settings.L -= 1
-                            settings.step = true
                         }
                     }
                         .foregroundColor(.white)
@@ -86,15 +82,8 @@ struct ContentView: View {
                                 time = clock.getTime()
                             }
                     } onIncrement: {
-                        settings.time += 0.033
-                        settings.step = true
                         clock.stepForward()
                     } onDecrement: {
-                        if clock.getTime() > 0 {
-                            settings.time -= 0.033
-                            settings.time = max(settings.time, 0)
-                            settings.step = true
-                        }
                         clock.stepBackward()
                     }
                         .foregroundColor(.white)

@@ -11,10 +11,11 @@ class Clock {
     private var previousFrameTime: Double?
 
     private var fixedFrameTime: Double? = nil
-    
+
+    public var paused = false
+
     private var time: Double!
     private var baseTime: Double?
-    private var paused = false
     private var pausedTime: Double = 0.0
     private var timeOfPause: Double?
     
