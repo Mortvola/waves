@@ -10,10 +10,12 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var settings = Settings.shared
     @State var paused = false
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State var time: Double = 0
     
     var body: some View {
         ZStack {
-            RenderView(paused: paused)
+            RenderView()
             VStack {
                 HStack {
                     Checkbox(checked: $settings.wireframe, label: "Wireframe")
@@ -79,16 +81,21 @@ struct ContentView: View {
                 }
                 HStack {
                     Stepper {
-                        Text("Time: \(String(format: "%.3f", settings.time))")
+                        Text("Time: \(String(format: "%.3f", time))")
+                            .onReceive(timer) { _ in
+                                time = clock.getTime()
+                            }
                     } onIncrement: {
                         settings.time += 0.033
                         settings.step = true
+                        clock.stepForward()
                     } onDecrement: {
-                        if settings.time > 0 {
+                        if clock.getTime() > 0 {
                             settings.time -= 0.033
                             settings.time = max(settings.time, 0)
                             settings.step = true
                         }
+                        clock.stepBackward()
                     }
                         .foregroundColor(.white)
                         .accentColor(.white)
@@ -99,6 +106,14 @@ struct ContentView: View {
                 HStack {
                     Button {
                         paused.toggle()
+                        
+                        if paused {
+                            clock.pause()
+                            time = clock.getTime()
+                        }
+                        else {
+                            clock.resume()
+                        }
                     } label: {
                         Text(paused ? "Resume" : "Pause")
                     }

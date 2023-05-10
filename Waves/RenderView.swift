@@ -11,8 +11,6 @@ import SwiftUI
 struct RenderView: UIViewControllerRepresentable {
     typealias UIViewControllerType = RenderViewController
     
-    var paused: Bool = false
-    
     func makeUIViewController(context: Context) -> RenderViewController {
         let viewController = RenderViewController()
         
@@ -20,8 +18,5 @@ struct RenderView: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: RenderViewController, context: Context) {
-        print("paused: \(paused)")
-
-        uiViewController.setPaused(paused)
     }
 }

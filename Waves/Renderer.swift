@@ -9,6 +9,8 @@ import Foundation
 import MetalKit
 import GameKit
 
+var clock = Clock();
+
 let maxBuffersInFlight = 3
 
 class Renderer {
@@ -43,8 +45,6 @@ class Renderer {
     private var wave: MTKMesh? = nil
     
     private var camera: Camera!
-    
-    private var clock = Clock();
     
     private var useNaivePipeline = false
     private var naivePipeline: MTLComputePipelineState? = nil
@@ -176,15 +176,6 @@ class Renderer {
         return MetalView.shared.device.makeSamplerState(descriptor: samplerDescriptor)!
     }
 
-    public func setPaused(paused: Bool) {
-        if paused {
-            clock.pause()
-        }
-        else {
-            clock.resume()
-        }
-    }
-    
     private func updateState() {
         /// Update any game state before rendering
         

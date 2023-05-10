@@ -36,9 +36,5 @@ class RenderDelegate: NSObject, MTKViewDelegate {
     
     func draw(in view: MTKView) {
         try? Renderer.shared.render(in: view)
-    }
-    
-    func setPaused(paused: Bool) {
-        Renderer.shared.setPaused(paused: paused)
-    }
+    }    
 }
