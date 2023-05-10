@@ -206,9 +206,6 @@ kernel void makeTimeTexture2(
     if (params.xzDisplacement) {
         if (kLength != 0) {
             dispX = ComplexMultiply(v, float2(0, -k.x / kLength));
-        }
-        
-        if (kLength != 0) {
             dispZ = ComplexMultiply(v, float2(0, -k.y / kLength));
         }
     }

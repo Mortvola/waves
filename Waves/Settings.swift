@@ -10,7 +10,8 @@ import Foundation
 class Settings: ObservableObject {
     static var shared = Settings()
     
-    @Published var wireframe = true
+    @Published var wireframe = false
+    @Published var normals = false
     @Published var xzDisplacement = true
     @Published var windspeed: Float = 5
     @Published var windDirection: Float = 0.0

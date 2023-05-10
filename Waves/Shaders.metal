@@ -110,6 +110,56 @@ fragment float4 fragmentWaterShader(
     return float4(c.rgb, 1);
 }
 
+struct NormalVertexIn {
+    float3 position [[attribute(0)]];
+};
+
+vertex VertexOut vertexNormalsShader(
+                                     NormalVertexIn in [[ stage_in ]],
+                                     const device FrameConstants& frameConstants [[ buffer(BufferIndexFrameConstants) ]],
+                                     uint vertexId [[ vertex_id ]],
+                                     texture2d<float, access::read> height [[ texture(3) ]],
+                                     texture2d<float, access::read> displacementX [[ texture(4) ]],
+                                     texture2d<float, access::read> displacementZ [[ texture(5) ]],
+                                     texture2d<float, access::read> slopeX [[ texture(6) ]],
+                                     texture2d<float, access::read> slopeZ [[ texture(7) ]]
+                                     )
+{
+    VertexOut out;
+
+    int x = (vertexId / 2) % height.get_width();
+    int y = (vertexId / 2) / height.get_width();
+    
+    float4 h = height.read(uint2(x, y));
+    float4 dispX = displacementX.read(uint2(x, y));
+    float4 dispZ = displacementZ.read(uint2(x, y));
+    float4 sX = slopeX.read(uint2(x, y));
+    float4 sZ = slopeZ.read(uint2(x, y));
+
+    float3 normal = float3(0 - sX.r, 1, 0 - sZ.r);
+    normal = normalize(normal);
+    
+    float lambda = -1;
+    
+    float3 p = float3(
+                      in.position.x + dispX.r * lambda,
+                      in.position.y + h.x, // + ((vertexId & 1) == 0 ? 0 : 1),
+                      in.position.z + dispZ.r * lambda);
+
+    if ((vertexId & 1) == 1) {
+        p += normal * 1.0;
+    }
+    
+    out.position = frameConstants.projectionMatrix * frameConstants.viewMatrix * float4(p, 1);
+
+    return out;
+}
+
+fragment float4 fragmentNormalsShader()
+{
+    return float4(0, 0, 1, 1);
+}
+
 kernel void makeInputTexture(
                              const device Params &params [[ buffer(0) ]],
                              texture2d<float, access::read> noise1 [[ texture(0) ]],

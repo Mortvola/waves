@@ -24,6 +24,12 @@ struct ContentView: View {
                     Spacer()
                 }
                 HStack {
+                    Checkbox(checked: $settings.normals, label: "Normals")
+                        .foregroundColor(.white)
+                        .padding([.leading, .top])
+                    Spacer()
+                }
+                HStack {
                     Checkbox(checked: $settings.xzDisplacement, label: "XZ Displacement")
                         .foregroundColor(.white)
                         .padding([.leading, .top])

@@ -39,6 +39,7 @@
 		79C8C96A2A028A6900BF851F /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C9692A028A6900BF851F /* Settings.swift */; };
 		79C8C96C2A03071D00BF851F /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C8C96B2A03071D00BF851F /* Fourier.swift */; };
 		79EC456F2A0BBEBE00DD6DE2 /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79EC456E2A0BBEBE00DD6DE2 /* Clock.swift */; };
+		79EC45712A0BF51700DD6DE2 /* Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79EC45702A0BF51700DD6DE2 /* Mesh.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +97,7 @@
 		79C8C9692A028A6900BF851F /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		79C8C96B2A03071D00BF851F /* Fourier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fourier.swift; sourceTree = "<group>"; };
 		79EC456E2A0BBEBE00DD6DE2 /* Clock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
+		79EC45702A0BF51700DD6DE2 /* Mesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mesh.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +158,7 @@
 				79372A5129FC13FD004FE219 /* MetalView.swift */,
 				79372A4D29FC1263004FE219 /* RenderDelegate.swift */,
 				79372A4F29FC1279004FE219 /* Renderer.swift */,
+				79EC45702A0BF51700DD6DE2 /* Mesh.swift */,
 				79EC456E2A0BBEBE00DD6DE2 /* Clock.swift */,
 				7954B5692A0A8BB000F83A31 /* FFTTexture.swift */,
 				79C8C9652A01465400BF851F /* Butterfly.swift */,
@@ -367,6 +370,7 @@
 				79372A5629FC2472004FE219 /* Shaders.metal in Sources */,
 				79372A5029FC1279004FE219 /* Renderer.swift in Sources */,
 				79C8C96A2A028A6900BF851F /* Settings.swift in Sources */,
+				79EC45712A0BF51700DD6DE2 /* Mesh.swift in Sources */,
 				79C8C95E2A00B34400BF851F /* TestFFT.swift in Sources */,
 				79372A652A005E9A004FE219 /* Vec3.swift in Sources */,
 				79C8C9642A01356300BF851F /* Complex.h in Sources */,

@@ -27,6 +27,7 @@ class Renderer {
 
     private var pipelineState: MTLRenderPipelineState? = nil
     private var wavePipelineState: MTLRenderPipelineState? = nil
+    private var normalsPipelineState: MTLRenderPipelineState? = nil
     
     private var sampler: MTLSamplerState? = nil
     
@@ -42,7 +43,8 @@ class Renderer {
     
     private var inputTexture: InputTexture? = nil
     
-    private var wave: MTKMesh? = nil
+    private var wave: Mesh? = nil
+    private var normals: MTLBuffer? = nil
     
     private var camera: Camera!
     
@@ -68,6 +70,7 @@ class Renderer {
             self.commandQueue = queue
             
             self.wavePipelineState = try makeWavePipeline()
+            self.normalsPipelineState = try makeNormalsPipeline()
             
             self.sampler = try makeSampler()
             
@@ -90,7 +93,9 @@ class Renderer {
             
             updatePipeline = try MetalView.shared.device.makeComputePipelineState(function: function)
             
-            wave = try allocatePlane(dimensions: simd_float2(Float(N * 2), Float(N * 2)), segments: simd_uint2(UInt32(N - 1), UInt32(N - 1)))
+            wave = try Mesh(N: N)
+            
+            normals = wave!.getNormalLines()
             
             frameConstants = MetalView.shared.device.makeBuffer(length: MemoryLayout<FrameConstants>.size)!
             
@@ -146,6 +151,19 @@ class Renderer {
         return mtlVertexDescriptor
     }
 
+    func buildNormalsVertexDescriptor() -> MTLVertexDescriptor {
+        let mtlVertexDescriptor = MTLVertexDescriptor()
+        
+        // Buffer 1
+        mtlVertexDescriptor.attributes[0].format = .float3
+        mtlVertexDescriptor.attributes[0].bufferIndex = 0
+        mtlVertexDescriptor.attributes[0].offset = 0
+
+        mtlVertexDescriptor.layouts[0].stride = MemoryLayout<simd_float3>.stride
+
+        return mtlVertexDescriptor
+    }
+
     func makeWavePipeline() throws -> MTLRenderPipelineState {
         let vertexDescriptor = buildVertexDescriptor();
         
@@ -160,6 +178,32 @@ class Renderer {
 
         let descr = MTLRenderPipelineDescriptor()
         descr.label = "Wave"
+        descr.rasterSampleCount = MetalView.shared.view!.sampleCount
+        descr.vertexFunction = vertexFunction
+        descr.fragmentFunction = fragmentFunction
+        descr.vertexDescriptor = vertexDescriptor
+        
+        descr.colorAttachments[0].pixelFormat = MetalView.shared.view!.colorPixelFormat
+        descr.depthAttachmentPixelFormat = MetalView.shared.view!.depthStencilPixelFormat
+        descr.stencilAttachmentPixelFormat = MTLPixelFormat.invalid
+                
+        return try MetalView.shared.device.makeRenderPipelineState(descriptor: descr)
+    }
+
+    func makeNormalsPipeline() throws -> MTLRenderPipelineState {
+        let vertexDescriptor = buildNormalsVertexDescriptor();
+        
+        let library = MetalView.shared.device.makeDefaultLibrary()
+        
+        let vertexFunction = library?.makeFunction(name: "vertexNormalsShader")
+        let fragmentFunction = library?.makeFunction(name: "fragmentNormalsShader")
+        
+        if vertexFunction == nil || fragmentFunction == nil {
+            throw Errors.makeFunctionError
+        }
+
+        let descr = MTLRenderPipelineDescriptor()
+        descr.label = "Normals"
         descr.rasterSampleCount = MetalView.shared.view!.sampleCount
         descr.vertexFunction = vertexFunction
         descr.fragmentFunction = fragmentFunction
@@ -313,6 +357,7 @@ class Renderer {
         guard
 //            let pipelineState = self.pipelineState,
             let wavePipelineState = self.wavePipelineState,
+            let normalsPipelineState = self.normalsPipelineState,
             let depthState = self.depthState
         else {
             return
@@ -368,14 +413,7 @@ class Renderer {
                     var color = simd_float4(0.18, 0.38, 0.42, 1)
                     renderEncoder.setFragmentBytes(&color, length: MemoryLayout<simd_float4>.size, index: 0)
 
-                    // Pass the vertex and index information to the vertex shader
-                    for (i, buffer) in wave!.vertexBuffers.enumerated() {
-                        renderEncoder.setVertexBuffer(buffer.buffer, offset: buffer.offset, index: i)
-                    }
-                    
-                    for submesh in wave!.submeshes {
-                        renderEncoder.drawIndexedPrimitives(type: submesh.primitiveType, indexCount: submesh.indexCount, indexType: submesh.indexType, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: submesh.indexBuffer.offset, instanceCount: 1)
-                    }
+                    wave!.draw(renderEncoder: renderEncoder)
 
                     if Settings.shared.wireframe {
                         renderEncoder.setTriangleFillMode(.lines)
@@ -383,17 +421,18 @@ class Renderer {
                         color = simd_float4(1, 0, 0, 1)
                         
                         renderEncoder.setFragmentBytes(&color, length: MemoryLayout<simd_float4>.size, index: 0)
-                        
-                        // Pass the vertex and index information to the vertex shader
-                        for (i, buffer) in wave!.vertexBuffers.enumerated() {
-                            renderEncoder.setVertexBuffer(buffer.buffer, offset: buffer.offset, index: i)
-                        }
-                        
-                        for submesh in wave!.submeshes {
-                            renderEncoder.drawIndexedPrimitives(type: submesh.primitiveType, indexCount: submesh.indexCount, indexType: submesh.indexType, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: submesh.indexBuffer.offset, instanceCount: 1)
-                        }
-                    }
 
+                        wave!.draw(renderEncoder: renderEncoder)
+                    }
+                    
+                    if Settings.shared.normals {
+                        renderEncoder.setRenderPipelineState(normalsPipelineState)
+                        
+                        renderEncoder.setVertexBuffer(normals, offset: 0, index: 0)
+                        
+                        renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: normals!.length / MemoryLayout<simd_float3>.size)
+                    }
+                    
                     renderEncoder.endEncoding()
                 }
 
@@ -410,47 +449,4 @@ class Renderer {
             commandBuffer.commit()
         }
     }
-}
-
-func allocatePlane(dimensions: simd_float2, segments: simd_uint2) throws -> MTKMesh {
-    let meshBufferAllocator = MTKMeshBufferAllocator(device: MetalView.shared.device)
-
-    let mesh = MDLMesh.newPlane(withDimensions: dimensions, segments: segments, geometryType: .triangles, allocator: meshBufferAllocator)
-
-//    mesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate, normalAttributeNamed: MDLVertexAttributeNormal, tangentAttributeNamed: MDLVertexAttributeTangent)
-
-    mesh.vertexDescriptor = vertexDescriptor()
-    
-    return try MTKMesh(mesh: mesh, device: MetalView.shared.device)
-}
-
-
-func vertexDescriptor() -> MDLVertexDescriptor {
-    let vertexDescriptor = MDLVertexDescriptor()
-    
-    var vertexAttributes = MDLVertexAttribute()
-    vertexAttributes.name = MDLVertexAttributePosition
-    vertexAttributes.format = .float3
-    vertexAttributes.offset = 0
-    vertexAttributes.bufferIndex = 0
-    
-    vertexDescriptor.attributes[0] = vertexAttributes
-            
-    vertexAttributes = MDLVertexAttribute()
-    vertexAttributes.name = MDLVertexAttributeTextureCoordinate
-    vertexAttributes.format = .float2
-    vertexAttributes.offset = 0
-    vertexAttributes.bufferIndex = 1
-    
-    vertexDescriptor.attributes[1] = vertexAttributes
-
-    var vertexBufferLayout = MDLVertexBufferLayout()
-    vertexBufferLayout.stride = MemoryLayout<simd_float3>.stride
-    vertexDescriptor.layouts[0] = vertexBufferLayout
-
-    vertexBufferLayout = MDLVertexBufferLayout()
-    vertexBufferLayout.stride = MemoryLayout<simd_float2>.stride
-    vertexDescriptor.layouts[1] = vertexBufferLayout
-    
-    return vertexDescriptor
 }
