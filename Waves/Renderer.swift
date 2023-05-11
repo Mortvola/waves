@@ -202,8 +202,8 @@ class Renderer {
         
         let library = MetalView.shared.device.makeDefaultLibrary()
         
-        let vertexFunction = library?.makeFunction(name: "vertexWaveShader")
-        let fragmentFunction = library?.makeFunction(name: "fragmentWireframeShader")
+        let vertexFunction = library?.makeFunction(name: "vertexWireframeShader")
+        let fragmentFunction = library?.makeFunction(name: "fragmentColorShader")
         
         if vertexFunction == nil || fragmentFunction == nil {
             throw Errors.makeFunctionError
@@ -229,7 +229,7 @@ class Renderer {
         let library = MetalView.shared.device.makeDefaultLibrary()
         
         let vertexFunction = library?.makeFunction(name: "vertexNormalsShader")
-        let fragmentFunction = library?.makeFunction(name: "fragmentNormalsShader")
+        let fragmentFunction = library?.makeFunction(name: "fragmentColorShader")
         
         if vertexFunction == nil || fragmentFunction == nil {
             throw Errors.makeFunctionError
@@ -450,7 +450,6 @@ class Renderer {
                         renderEncoder.setTriangleFillMode(.lines)
                         
                         color = simd_float4(1, 0, 0, 1)
-                        
                         renderEncoder.setFragmentBytes(&color, length: MemoryLayout<simd_float4>.size, index: 0)
 
                         wave!.draw(renderEncoder: renderEncoder)
@@ -461,6 +460,9 @@ class Renderer {
                         
                         renderEncoder.setVertexBuffer(normals, offset: 0, index: 0)
                         
+                        color = simd_float4(0, 0, 1, 1)
+                        renderEncoder.setFragmentBytes(&color, length: MemoryLayout<simd_float4>.size, index: 0)
+
                         renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: normals!.length / MemoryLayout<simd_float3>.size)
                     }
                     

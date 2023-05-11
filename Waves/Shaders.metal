@@ -19,33 +19,35 @@ struct VertexIn {
 struct VertexOut {
     float4 position [[ position ]];
     float2 texcoord;
-    uint id;
     float3 normal;
 };
 
-vertex VertexOut vertexShader(
-                              VertexIn in [[ stage_in ]]
-                              )
+void getWavePoint(
+                  int x,
+                  int y,
+                  float3 originalPosition,
+                  texture2d<float, access::read> height,
+                  texture2d<float, access::read> displacementX,
+                  texture2d<float, access::read> displacementZ,
+                  texture2d<float, access::read> slopeX,
+                  texture2d<float, access::read> slopeZ,
+                  thread float3 &position,
+                  thread float3 &normal)
 {
-    VertexOut out;
-    
-    out.position = float4(in.position.x / 512.0, in.position.y / 512.0, 0, 1);
-    out.texcoord = in.texcoord;
+    float4 h = height.read(uint2(x, y));
+    float4 dispX = displacementX.read(uint2(x, y));
+    float4 dispZ = displacementZ.read(uint2(x, y));
+    float4 sX = slopeX.read(uint2(x, y));
+    float4 sZ = slopeZ.read(uint2(x, y));
 
-    return out;
-}
-
-fragment float4 fragmentShader(
-                               VertexOut in [[ stage_in ]],
-                               texture2d<float> tex [[ texture(0) ]],
-                               sampler sampler [[ sampler(0) ]]
-                               )
-{
-    float4 out;
+    float lambda = -1;
     
-    out = tex.sample(sampler, in.texcoord);
+    position = float3(
+                      originalPosition.x + dispX.r * lambda,
+                      originalPosition.y + h.x,
+                      originalPosition.z + dispZ.r * lambda);
     
-    return out;
+    normal = normalize(float3(0 - sX.r, 1, 0 - sZ.r));
 }
 
 vertex VertexOut vertexWaveShader(
@@ -64,24 +66,15 @@ vertex VertexOut vertexWaveShader(
     int x = vertexId % height.get_width();
     int y = vertexId / height.get_width();
     
-    float4 h = height.read(uint2(x, y));
-    float4 dispX = displacementX.read(uint2(x, y));
-    float4 dispZ = displacementZ.read(uint2(x, y));
-    float4 sX = slopeX.read(uint2(x, y));
-    float4 sZ = slopeZ.read(uint2(x, y));
-
-    float lambda = -1;
+    float3 p;
+    float3 normal;
     
-    float4 p = float4(
-                      in.position.x + dispX.r * lambda,
-                      in.position.y + h.x,
-                      in.position.z + dispZ.r * lambda,
-                      1.0);
+    getWavePoint(x, y, in.position, height, displacementX, displacementZ, slopeX, slopeZ, p, normal);
     
-    out.position = frameConstants.projectionMatrix * frameConstants.viewMatrix * p;
+    out.position = frameConstants.projectionMatrix * frameConstants.viewMatrix * float4(p, 1);
     out.texcoord = in.texcoord;
 
-    out.normal = normalize(float3(0 - sX.r, 1, 0 - sZ.r));
+    out.normal = normal;
     
     return out;
 }
@@ -130,22 +123,11 @@ vertex VertexOut vertexNormalsShader(
     int x = (vertexId / 2) % height.get_width();
     int y = (vertexId / 2) / height.get_width();
     
-    float4 h = height.read(uint2(x, y));
-    float4 dispX = displacementX.read(uint2(x, y));
-    float4 dispZ = displacementZ.read(uint2(x, y));
-    float4 sX = slopeX.read(uint2(x, y));
-    float4 sZ = slopeZ.read(uint2(x, y));
-
-    float3 normal = float3(0 - sX.r, 1, 0 - sZ.r);
-    normal = normalize(normal);
+    float3 p;
+    float3 normal;
     
-    float lambda = -1;
+    getWavePoint(x, y, in.position, height, displacementX, displacementZ, slopeX, slopeZ, p, normal);
     
-    float3 p = float3(
-                      in.position.x + dispX.r * lambda,
-                      in.position.y + h.x,
-                      in.position.z + dispZ.r * lambda);
-
     if ((vertexId & 1) == 1) {
         p += normal * 1.0;
     }
@@ -155,14 +137,41 @@ vertex VertexOut vertexNormalsShader(
     return out;
 }
 
-fragment float4 fragmentNormalsShader()
+struct WireframeVertexOut {
+    float4 position [[ position ]];
+};
+
+vertex WireframeVertexOut vertexWireframeShader(
+                                  VertexIn in [[ stage_in ]],
+                                  const device FrameConstants& frameConstants [[ buffer(BufferIndexFrameConstants) ]],
+                                  uint vertexId [[ vertex_id ]],
+                                  texture2d<float, access::read> height [[ texture(3) ]],
+                                  texture2d<float, access::read> displacementX [[ texture(4) ]],
+                                  texture2d<float, access::read> displacementZ [[ texture(5) ]],
+                                  texture2d<float, access::read> slopeX [[ texture(6) ]],
+                                  texture2d<float, access::read> slopeZ [[ texture(7) ]]
+                                  )
 {
-    return float4(0, 0, 1, 1);
+    WireframeVertexOut out;
+    
+    int x = vertexId % height.get_width();
+    int y = vertexId / height.get_width();
+    
+    float3 p;
+    float3 normal;
+    
+    getWavePoint(x, y, in.position, height, displacementX, displacementZ, slopeX, slopeZ, p, normal);
+    
+    out.position = frameConstants.projectionMatrix * frameConstants.viewMatrix * float4(p, 1);
+    
+    return out;
 }
 
-fragment float4 fragmentWireframeShader()
+fragment float4 fragmentColorShader(
+                                        const device float4 &color [[ buffer(0) ]]
+                                        )
 {
-    return float4(1, 0, 0, 1);
+    return color;
 }
 
 kernel void makeInputTexture(
