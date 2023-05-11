@@ -53,6 +53,8 @@ class Renderer {
     private var useNaivePipeline = false
     private var naivePipeline: MTLComputePipelineState? = nil
     
+    private var params: MTLBuffer? = nil
+
     func initialize(camera: Camera) throws {
         do {
             self.camera = camera
@@ -74,7 +76,7 @@ class Renderer {
             
             self.sampler = try makeSampler()
             
-            inputTexture = try InputTexture(commandQueue: commandQueue!, N: N, windDirection: Settings.shared.windDirection, windSpeed: Settings.shared.windspeed)
+            inputTexture = try InputTexture(commandQueue: commandQueue!, N: N)
             
             let textureDescr = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rg32Float, width: N, height: N, mipmapped: false);
             textureDescr.usage = [.shaderWrite, .shaderRead]
@@ -104,7 +106,7 @@ class Renderer {
             
             camera.updateLookAt(yawChange: 0, pitchChange: 25)
             
-            makeNaivePipeline(commandQueue: commandQueue!, windDirection: Settings.shared.windspeed, windSpeed: Settings.shared.windspeed)
+            makeNaivePipeline(commandQueue: commandQueue!)
             
             let depthStateDescriptor = MTLDepthStencilDescriptor()
             depthStateDescriptor.depthCompareFunction = .less
@@ -115,6 +117,9 @@ class Renderer {
             }
             
             self.depthState = state
+            
+            self.params = MetalView.shared.device.makeBuffer(length: MemoryLayout<Params>.size)!
+            
         }
         catch{
             print(error)
@@ -122,7 +127,7 @@ class Renderer {
         }
     }
 
-    func makeNaivePipeline(commandQueue: MTLCommandQueue, windDirection: Float, windSpeed: Float) {
+    func makeNaivePipeline(commandQueue: MTLCommandQueue) {
         let library = MetalView.shared.device.makeDefaultLibrary()
 
         guard let function = library?.makeFunction(name: "naiveHeightCompute") else {
@@ -240,11 +245,6 @@ class Renderer {
         guard let updatePipeline = updatePipeline else {
             return
         }
-        
-//        if Settings.shared.windspeed != inputTexture?.windspeed ||
-//            Settings.shared.windDirection != inputTexture?.windDirection {
-//            inputTexture?.makeTexture(commandQueue: commandQueue, windDirection: Settings.shared.windDirection, windSpeed: Settings.shared.windspeed)
-//        }
 
         var time = Float(clock.getTime())
 
@@ -254,8 +254,8 @@ class Renderer {
                     if let naivePipeline = naivePipeline, useNaivePipeline {
                         computeEncoder.setComputePipelineState(naivePipeline)
                         
-                        let p1 = inputTexture!.params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
-                        p1[0].windDirection = simd_float2(cos(Settings.shared.windDirection / 180 * Float.pi), sin(Settings.shared.windDirection / 360 * Float.pi))
+                        let p1 = self.params!.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
+                        p1[0].windDirection = simd_float2(cos(Settings.shared.windDirection / 180 * Float.pi), sin(Settings.shared.windDirection / 180 * Float.pi))
                         p1[0].windSpeed = Settings.shared.windspeed
                         p1[0].windDirectionalFactor = Settings.shared.windDirectionalFactor
                         p1[0].L = Settings.shared.L
@@ -263,7 +263,7 @@ class Renderer {
                         p1[0].l = Settings.shared.l
                         p1[0].xzDisplacement = Settings.shared.xzDisplacement
                         
-                        computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
+                        computeEncoder.setBuffer(self.params, offset: 0, index: 0)
                         
                         var time = Float(clock.getTime())
                         computeEncoder.setBytes(&time, length: MemoryLayout<Float>.size, index: 1)
@@ -291,8 +291,8 @@ class Renderer {
                     else {
                         computeEncoder.setComputePipelineState(updatePipeline)
                         
-                        let p1 = inputTexture!.params.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
-                        p1[0].windDirection = simd_float2(cos(Settings.shared.windDirection / 180 * Float.pi), sin(Settings.shared.windDirection / 360 * Float.pi))
+                        let p1 = self.params!.contents().bindMemory(to: Params.self, capacity: MemoryLayout<Params>.size)
+                        p1[0].windDirection = simd_float2(cos(Settings.shared.windDirection / 180 * Float.pi), sin(Settings.shared.windDirection / 180 * Float.pi))
                         p1[0].windSpeed = Settings.shared.windspeed
                         p1[0].windDirectionalFactor = Settings.shared.windDirectionalFactor
                         p1[0].L = Settings.shared.L
@@ -300,7 +300,7 @@ class Renderer {
                         p1[0].l = Settings.shared.l
                         p1[0].xzDisplacement = Settings.shared.xzDisplacement
                         
-                        computeEncoder.setBuffer(inputTexture?.params, offset: 0, index: 0)
+                        computeEncoder.setBuffer(self.params, offset: 0, index: 0)
                         
                         computeEncoder.setBytes(&time, length: MemoryLayout<Float>.size, index: 1)
                         

@@ -14,8 +14,8 @@
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "396"
-            endingLineNumber = "396"
+            startingLineNumber = "394"
+            endingLineNumber = "394"
             landmarkName = "render(in:)"
             landmarkType = "7">
             <Locations>
@@ -94,58 +94,10 @@
             filePath = "Waves/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "73"
-            endingLineNumber = "73"
+            startingLineNumber = "75"
+            endingLineNumber = "75"
             landmarkName = "initialize(camera:)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "075D1143-42F6-4401-A6CF-DAD8F553FCCC"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Renderer.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "98"
-            endingLineNumber = "98"
-            landmarkName = "initialize(camera:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "075D1143-42F6-4401-A6CF-DAD8F553FCCC - 676399ddb989649a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Renderer.initialize(camera: Waves.Camera) throws -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "97"
-                  endingLineNumber = "97"
-                  offsetFromSymbolStart = "4476">
-               </Location>
-               <Location
-                  uuid = "075D1143-42F6-4401-A6CF-DAD8F553FCCC - 676399ddb98964fb"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Renderer.initialize(camera: Waves.Camera) throws -&gt; ()"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Renderer.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "98"
-                  endingLineNumber = "98"
-                  offsetFromSymbolStart = "4472">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -158,9 +110,9 @@
             filePath = "Waves/Mesh.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
-            landmarkName = "getNormalLines()"
+            startingLineNumber = "108"
+            endingLineNumber = "108"
+            landmarkName = "makeNormalIndexes()"
             landmarkType = "7">
             <Locations>
                <Location
@@ -207,54 +159,6 @@
                   startingLineNumber = "87"
                   endingLineNumber = "87"
                   offsetFromSymbolStart = "2336">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "D6144240-FB2E-47E1-9A65-20A948D708FB"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Waves/Mesh.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "99"
-            endingLineNumber = "99"
-            landmarkName = "getNormalLines()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "D6144240-FB2E-47E1-9A65-20A948D708FB - 2eba6ef69a234213"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Mesh.getNormalLines() -&gt; __C.MTLBuffer"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Mesh.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "98"
-                  endingLineNumber = "98"
-                  offsetFromSymbolStart = "2912">
-               </Location>
-               <Location
-                  uuid = "D6144240-FB2E-47E1-9A65-20A948D708FB - 2eba6ef69a234dbc"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Waves.Mesh.getNormalLines() -&gt; __C.MTLBuffer"
-                  moduleName = "Waves"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/richard/Documents/development/Waves/Waves/Mesh.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "95"
-                  endingLineNumber = "95"
-                  offsetFromSymbolStart = "2840">
                </Location>
             </Locations>
          </BreakpointContent>
