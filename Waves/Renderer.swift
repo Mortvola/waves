@@ -27,8 +27,9 @@ class Renderer {
 
     private var pipelineState: MTLRenderPipelineState? = nil
     private var wavePipelineState: MTLRenderPipelineState? = nil
+    private var wireframePipelineState: MTLRenderPipelineState? = nil
     private var normalsPipelineState: MTLRenderPipelineState? = nil
-    
+
     private var sampler: MTLSamplerState? = nil
     
     private var h0ktTexture: FFTTexture?
@@ -72,6 +73,7 @@ class Renderer {
             self.commandQueue = queue
             
             self.wavePipelineState = try makeWavePipeline()
+            self.wireframePipelineState = try makeWireframePipeline()
             self.normalsPipelineState = try makeNormalsPipeline()
             
             self.sampler = try makeSampler()
@@ -176,6 +178,32 @@ class Renderer {
         
         let vertexFunction = library?.makeFunction(name: "vertexWaveShader")
         let fragmentFunction = library?.makeFunction(name: "fragmentWaterShader")
+        
+        if vertexFunction == nil || fragmentFunction == nil {
+            throw Errors.makeFunctionError
+        }
+
+        let descr = MTLRenderPipelineDescriptor()
+        descr.label = "Wave"
+        descr.rasterSampleCount = MetalView.shared.view!.sampleCount
+        descr.vertexFunction = vertexFunction
+        descr.fragmentFunction = fragmentFunction
+        descr.vertexDescriptor = vertexDescriptor
+        
+        descr.colorAttachments[0].pixelFormat = MetalView.shared.view!.colorPixelFormat
+        descr.depthAttachmentPixelFormat = MetalView.shared.view!.depthStencilPixelFormat
+        descr.stencilAttachmentPixelFormat = MTLPixelFormat.invalid
+                
+        return try MetalView.shared.device.makeRenderPipelineState(descriptor: descr)
+    }
+
+    func makeWireframePipeline() throws -> MTLRenderPipelineState {
+        let vertexDescriptor = buildVertexDescriptor();
+        
+        let library = MetalView.shared.device.makeDefaultLibrary()
+        
+        let vertexFunction = library?.makeFunction(name: "vertexWaveShader")
+        let fragmentFunction = library?.makeFunction(name: "fragmentWireframeShader")
         
         if vertexFunction == nil || fragmentFunction == nil {
             throw Errors.makeFunctionError
@@ -357,6 +385,7 @@ class Renderer {
         guard
 //            let pipelineState = self.pipelineState,
             let wavePipelineState = self.wavePipelineState,
+            let wireframePipelineState = self.wireframePipelineState,
             let normalsPipelineState = self.normalsPipelineState,
             let depthState = self.depthState
         else {
@@ -416,6 +445,8 @@ class Renderer {
                     wave!.draw(renderEncoder: renderEncoder)
 
                     if Settings.shared.wireframe {
+                        renderEncoder.setRenderPipelineState(wireframePipelineState)
+
                         renderEncoder.setTriangleFillMode(.lines)
                         
                         color = simd_float4(1, 0, 0, 1)

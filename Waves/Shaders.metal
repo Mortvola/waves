@@ -143,7 +143,7 @@ vertex VertexOut vertexNormalsShader(
     
     float3 p = float3(
                       in.position.x + dispX.r * lambda,
-                      in.position.y + h.x, // + ((vertexId & 1) == 0 ? 0 : 1),
+                      in.position.y + h.x,
                       in.position.z + dispZ.r * lambda);
 
     if ((vertexId & 1) == 1) {
@@ -158,6 +158,11 @@ vertex VertexOut vertexNormalsShader(
 fragment float4 fragmentNormalsShader()
 {
     return float4(0, 0, 1, 1);
+}
+
+fragment float4 fragmentWireframeShader()
+{
+    return float4(1, 0, 0, 1);
 }
 
 kernel void makeInputTexture(
